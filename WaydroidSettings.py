@@ -1,3 +1,4 @@
+#!/bin/python
 import sys
 import gi
 import Utils
