@@ -24,14 +24,17 @@ class WaydroidSettings(Gtk.Application):
         home_web_view_box.pack_start(self.home_web_view, True, True, 0)
 
         free_form_switch = self.builder.get_object('free_form_switch')
+        print("PROP_FREE_FORM: " + Utils.get_prop(Utils.PROP_FREE_FORM))
         if Utils.get_prop(Utils.PROP_FREE_FORM) == 'true':
             free_form_switch.set_state(True)
 
-        color_invert_switch = self.builder.get_object('color_invert_switch')
+        color_invert_switch = self.builder.get_object('color_invert_switch')        
+        print("PROP_INVERT_COLORS: " + Utils.get_prop(Utils.PROP_INVERT_COLORS))
         if Utils.get_prop(Utils.PROP_INVERT_COLORS) == 'true':
             color_invert_switch.set_state(True)
 
-        suspend_switch = self.builder.get_object('suspend_switch')
+        suspend_switch = self.builder.get_object('suspend_switch') 
+        print("PROP_SUSPEND_INACTIVE: " + Utils.get_prop(Utils.PROP_SUSPEND_INACTIVE))
         if Utils.get_prop(Utils.PROP_SUSPEND_INACTIVE) == 'true':
             suspend_switch.set_state(True)
 
