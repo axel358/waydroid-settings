@@ -9,7 +9,9 @@ SCRIPT_FILE=~/.local/share/waydroid-settings/waydroid-settings.sh
 if test -f "$SCRIPT_FILE"; then
     echo "$SCRIPT_FILE exists."
 else
-	git clone https://github.com/axel358/Waydroid-Settings ~/.local/share/waydroid-settings
+	git clone --recurse-submodules https://github.com/axel358/Waydroid-Settings ~/.local/share/waydroid-settings
+	git submodule init
+	git submodule update
 fi
 
 cp ~/.local/share/waydroid-settings/waydroid-settings.sh ~/.local/bin/
