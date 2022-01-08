@@ -1,9 +1,8 @@
 # Waydroid-Settings
 GTK app written in Python to control Waydroid settings
 
-## Manual Installation
-Here are the steps needed to manually install Waydroid-Settings app:
+## Install
 
-1) Download or clone this repo, then copy it to /usr/share/Waydroid-Settings
-2) Copy the Waydroid-Settings.sh file to /usr/bin/ and set it to be executable
-3) Copy the waydroid-settings.desktop file to /home/<username>/.local/share/applications
+Run the script below to auto install the app:
+
+	wget -O - https://raw.githubusercontent.com/axel358/Waydroid-Settings/main/install.sh | bash
