@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-cd /usr/share/Waydroid-Settings
+cd ~/.local/share/waydroid-settings
 ./waydroid-settings.py
