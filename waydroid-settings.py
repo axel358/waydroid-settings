@@ -2,6 +2,8 @@
 import sys
 import gi
 import utils
+import glob
+import os
 gi.require_version('Gtk', '3.0')
 gi.require_version('WebKit2', '4.0')
 from gi.repository import Gtk
@@ -18,6 +20,8 @@ class WaydroidSettings(Gtk.Application):
         docs_web_view_box = self.builder.get_object('docs_web_view_box')
         self.docs_web_view = WebKit2.WebView()
         docs_web_view_box.pack_start(self.docs_web_view, True, True, 0)
+
+        self.scripts_list_box = self.builder.get_object('scripts_list_box')
 
         free_form_switch = self.builder.get_object('free_form_switch')
         print("PROP_FREE_FORM: " + utils.get_prop(utils.PROP_FREE_FORM))
@@ -67,13 +71,15 @@ class WaydroidSettings(Gtk.Application):
             utils.set_prop(utils.PROP_INVERT_COLORS, 'false')
 
     def show_ff_dialog(self, button):
-        dialog = Gtk.Dialog(title='Exclude apps', use_header_bar=True)
+        dialog = Gtk.Dialog(title='Excluded apps', use_header_bar=True)
         dialog.add_buttons(
             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK
         )
         dialog.get_content_area().pack_start(Gtk.Label(label='Space separated package names to exclude'), True, True,
                                              10)
         apps_entry = Gtk.Entry()
+        apps_entry.set_margin_start(5)
+        apps_entry.set_margin_end(5)
         dialog.get_content_area().pack_start(apps_entry, True, True, 10)
         dialog.show_all()
         response = dialog.run()
@@ -87,11 +93,51 @@ class WaydroidSettings(Gtk.Application):
     def show_force_w_dialog(self, button):
         pass
 
+    def run_script(self, button, script):
+        utils.run_script(script)
+
+    def update_scripts_list(self):
+        for child in self.scripts_list_box.get_children():
+            self.scripts_list_box.remove(child)
+
+        script_list = glob.glob(utils.SCRIPTS_DIR+'*.py') + glob.glob(utils.SCRIPTS_DIR+'*.sh')
+
+        for script in script_list:
+            row = Gtk.ListBoxRow()
+            script_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+            script_icon_image = Gtk.Image().new_from_icon_name('text-x-script', Gtk.IconSize.BUTTON)
+            script_name_label = Gtk.Label(label=os.path.basename(script))
+            run_script_button = Gtk.Button().new_from_icon_name('media-playback-start', Gtk.IconSize.BUTTON)
+            run_script_button.connect('clicked', self.run_script, script)
+
+            script_row.pack_start(script_icon_image, False, False, 10)
+            script_row.pack_start(script_name_label, False, False, 5)
+            script_row.pack_end(run_script_button, False, False, 10)
+
+            row.add(script_row)
+            self.scripts_list_box.add(row)
+            
+        self.scripts_list_box.show_all()
+
+        
+
     def on_tab_switched(self, notebook, page, position):
         if position == 1:
             self.docs_web_view.load_uri(utils.DOCS_URL)
         elif position == 2:
-            self.home_web_view.load_uri(utils.HOME_URL)
+            self.update_scripts_list()
+
+    def show_about_dialog(self, button):
+        dialog = Gtk.AboutDialog()
+        dialog.props.program_name = 'Waydroid Settings'
+        dialog.props.version = "0.1.0"
+        dialog.props.authors = ['Axel358', 'Jon West']
+        dialog.props.copyright = 'GPL-3'
+        dialog.props.logo_icon_name = 'waydroid-settings'
+        dialog.props.comments = 'Control Waydroid settings'
+        dialog.props.website = utils.HOME_URL;
+        dialog.set_transient_for(self.window)
+        dialog.show()
 
 
 if __name__ == "__main__":
