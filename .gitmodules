@@ -1,0 +1,3 @@
+[submodule "scripts/darth_waydr"]
+	path = scripts/darth_waydr
+	url = https://github.com/aditya24raj/darth_waydr.git
