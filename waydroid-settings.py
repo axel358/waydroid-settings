@@ -107,9 +107,8 @@ class WaydroidSettings(Gtk.Application):
         for child in self.scripts_list_box.get_children():
             self.scripts_list_box.remove(child)
 
-        script_list = glob.glob(utils.SCRIPTS_DIR+'*.py') + \
-            glob.glob(utils.SCRIPTS_DIR+'*.sh')
-
+        script_list = glob.glob(utils.SCRIPTS_DIR+'/**/*.sh', recursive=True)
+        
         for script in script_list:
             row = Gtk.ListBoxRow()
             script_row = Gtk.Box(
