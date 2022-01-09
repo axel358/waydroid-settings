@@ -116,12 +116,16 @@ class WaydroidSettings(Gtk.Application):
             script_icon_image = Gtk.Image().new_from_icon_name(
                 'text-x-script', Gtk.IconSize.BUTTON)
             script_name_label = Gtk.Label(label=os.path.basename(script))
+            run_help_button = Gtk.Button().new_from_icon_name(
+                'gtk-dialog-question', Gtk.IconSize.BUTTON)
+            run_help_button.connect('clicked', self.run_help, script)
             run_script_button = Gtk.Button().new_from_icon_name(
                 'media-playback-start', Gtk.IconSize.BUTTON)
             run_script_button.connect('clicked', self.run_script, script)
 
             script_row.pack_start(script_icon_image, False, False, 10)
             script_row.pack_start(script_name_label, False, False, 5)
+            script_row.pack_end(run_help_button, False, False, 10)
             script_row.pack_end(run_script_button, False, False, 10)
 
             row.add(script_row)
@@ -134,6 +138,12 @@ class WaydroidSettings(Gtk.Application):
         if '.py' in script: interpreter = '/bin/python3'
         else: interpreter = '/bin/bash'
         self.terminal.spawn_async(Vte.PtyFlags.DEFAULT, None, [interpreter, script], None, GLib.SpawnFlags.DEFAULT, None,None,-1, None, None)
+    
+    def run_help(self, button, script):
+        if '.py' in script: interpreter = '/bin/python3'
+        else: interpreter = '/bin/bash'
+        help_arg = '-h'
+        self.terminal.spawn_async(Vte.PtyFlags.DEFAULT, None, [interpreter, script, help_arg], None, GLib.SpawnFlags.DEFAULT, None,None,-1, None, None)
 
     def on_tab_switched(self, notebook, page, position):
         if position == 1:
