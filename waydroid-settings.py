@@ -6,8 +6,8 @@ import glob
 import os
 gi.require_version('Gtk', '3.0')
 gi.require_version('WebKit2', '4.0')
-from gi.repository import Gtk
-from gi.repository import WebKit2
+gi.require_version('Vte', '2.91')
+from gi.repository import Gtk, Vte, WebKit2, GLib
 
 
 class WaydroidSettings(Gtk.Application):
@@ -28,13 +28,14 @@ class WaydroidSettings(Gtk.Application):
         if utils.get_prop(utils.PROP_FREE_FORM) == 'true':
             free_form_switch.set_state(True)
 
-        color_invert_switch = self.builder.get_object('color_invert_switch')        
+        color_invert_switch = self.builder.get_object('color_invert_switch')
         print("PROP_INVERT_COLORS: " + utils.get_prop(utils.PROP_INVERT_COLORS))
         if utils.get_prop(utils.PROP_INVERT_COLORS) == 'true':
             color_invert_switch.set_state(True)
 
-        suspend_switch = self.builder.get_object('suspend_switch') 
-        print("PROP_SUSPEND_INACTIVE: " + utils.get_prop(utils.PROP_SUSPEND_INACTIVE))
+        suspend_switch = self.builder.get_object('suspend_switch')
+        print("PROP_SUSPEND_INACTIVE: " +
+              utils.get_prop(utils.PROP_SUSPEND_INACTIVE))
         if utils.get_prop(utils.PROP_SUSPEND_INACTIVE) == 'true':
             suspend_switch.set_state(True)
 
@@ -42,6 +43,15 @@ class WaydroidSettings(Gtk.Application):
         w_height_entry = self.builder.get_object('w_height_entry')
         wp_width_entry = self.builder.get_object('wp_width_entry')
         wp_height_entry = self.builder.get_object('wp_height_entry')
+
+        scripts_box = self.builder.get_object('scripts_box')
+        scroll_view = Gtk.ScrolledWindow()
+        self.terminal = Vte.Terminal()
+        self.terminal.set_input_enabled(True)
+        self.terminal.set_scroll_on_output(True)
+        scroll_view.add(self.terminal)
+
+        scripts_box.pack_end(scroll_view, True, True, 10)
 
         self.builder.connect_signals(self)
 
@@ -85,7 +95,7 @@ class WaydroidSettings(Gtk.Application):
         response = dialog.run()
 
         if response == Gtk.ResponseType.OK:
-            if len(app_list := apps_entry.get_text()) > 0:
+            if len(app_list:= apps_entry.get_text()) > 0:
                 utils.set_prop(utils.PROP_BLACKLISTED_APPS, app_list)
 
         dialog.destroy()
@@ -93,21 +103,22 @@ class WaydroidSettings(Gtk.Application):
     def show_force_w_dialog(self, button):
         pass
 
-    def run_script(self, button, script):
-        utils.run_script(script)
-
     def update_scripts_list(self):
         for child in self.scripts_list_box.get_children():
             self.scripts_list_box.remove(child)
 
-        script_list = glob.glob(utils.SCRIPTS_DIR+'*.py') + glob.glob(utils.SCRIPTS_DIR+'*.sh')
+        script_list = glob.glob(utils.SCRIPTS_DIR+'*.py') + \
+            glob.glob(utils.SCRIPTS_DIR+'*.sh')
 
         for script in script_list:
             row = Gtk.ListBoxRow()
-            script_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
-            script_icon_image = Gtk.Image().new_from_icon_name('text-x-script', Gtk.IconSize.BUTTON)
+            script_row = Gtk.Box(
+                orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+            script_icon_image = Gtk.Image().new_from_icon_name(
+                'text-x-script', Gtk.IconSize.BUTTON)
             script_name_label = Gtk.Label(label=os.path.basename(script))
-            run_script_button = Gtk.Button().new_from_icon_name('media-playback-start', Gtk.IconSize.BUTTON)
+            run_script_button = Gtk.Button().new_from_icon_name(
+                'media-playback-start', Gtk.IconSize.BUTTON)
             run_script_button.connect('clicked', self.run_script, script)
 
             script_row.pack_start(script_icon_image, False, False, 10)
@@ -116,10 +127,14 @@ class WaydroidSettings(Gtk.Application):
 
             row.add(script_row)
             self.scripts_list_box.add(row)
-            
+
         self.scripts_list_box.show_all()
 
-        
+
+    def run_script(self, button, script):
+        if '.py' in script: interpreter = '/bin/python3'
+        else: interpreter = '/bin/bash'
+        self.terminal.spawn_async(Vte.PtyFlags.DEFAULT, None, [interpreter, script], None, GLib.SpawnFlags.DEFAULT, None,None,-1, None, None)
 
     def on_tab_switched(self, notebook, page, position):
         if position == 1:
@@ -135,7 +150,7 @@ class WaydroidSettings(Gtk.Application):
         dialog.props.copyright = 'GPL-3'
         dialog.props.logo_icon_name = 'waydroid-settings'
         dialog.props.comments = 'Control Waydroid settings'
-        dialog.props.website = utils.HOME_URL;
+        dialog.props.website = utils.HOME_URL
         dialog.set_transient_for(self.window)
         dialog.show()
 

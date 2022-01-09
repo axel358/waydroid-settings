@@ -28,12 +28,3 @@ def set_prop(name, value):
         return 'ok'
     except:
         return 'set_prop_error'
-
-
-def run_script(script):
-	try:
-		subprocess.run(['bash',script])
-		return 'ok'
-	except subprocess.CalledProcessError as e:
-		print(e)
-		return 'error'
