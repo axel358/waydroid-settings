@@ -101,7 +101,24 @@ class WaydroidSettings(Gtk.Application):
         dialog.destroy()
 
     def show_force_w_dialog(self, button):
-        pass
+        dialog = Gtk.Dialog(title='Included apps', use_header_bar=True)
+        dialog.add_buttons(
+            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK
+        )
+        dialog.get_content_area().pack_start(Gtk.Label(label='Space separated package names to exclude'), True, True,
+                                             10)
+        apps_entry = Gtk.Entry()
+        apps_entry.set_margin_start(5)
+        apps_entry.set_margin_end(5)
+        dialog.get_content_area().pack_start(apps_entry, True, True, 10)
+        dialog.show_all()
+        response = dialog.run()
+
+        if response == Gtk.ResponseType.OK:
+            if len(app_list:= apps_entry.get_text()) > 0:
+                utils.set_prop(utils.PROP_ACTIVE_APPS, app_list)
+
+        dialog.destroy()
 
     def update_scripts_list(self):
         for child in self.scripts_list_box.get_children():
