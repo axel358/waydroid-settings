@@ -24,7 +24,7 @@ def get_prop(name):
 
 def set_prop(name, value):
     try:
-        subprocess.run('waydroid prop set ' + name + ' ' + value)
+        subprocess.run('sudo waydroid prop set ' + name + ' ' + value, shell=True)
         return 'ok'
     except:
         return 'set_prop_error'
