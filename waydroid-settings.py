@@ -91,12 +91,15 @@ class WaydroidSettings(Gtk.Application):
         apps_entry.set_margin_start(5)
         apps_entry.set_margin_end(5)
         dialog.get_content_area().pack_start(apps_entry, True, True, 10)
+        current_app_list = utils.get_prop(utils.PROP_BLACKLISTED_APPS)
+        apps_entry.set_text(current_app_list)
         dialog.show_all()
         response = dialog.run()
 
         if response == Gtk.ResponseType.OK:
             if len(app_list:= apps_entry.get_text()) > 0:
-                utils.set_prop(utils.PROP_BLACKLISTED_APPS, app_list)
+                str_apps_list = '"'+str(apps_entry.get_text().rstrip())+'"'
+                utils.set_prop(utils.PROP_BLACKLISTED_APPS, str_apps_list)
 
         dialog.destroy()
 
@@ -112,7 +115,6 @@ class WaydroidSettings(Gtk.Application):
         apps_entry.set_margin_end(5)
         dialog.get_content_area().pack_start(apps_entry, True, True, 10)
         current_app_list = utils.get_prop(utils.PROP_ACTIVE_APPS)
-        print(current_app_list)
         apps_entry.set_text(current_app_list)
         dialog.show_all()
         response = dialog.run()
