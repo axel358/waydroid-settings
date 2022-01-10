@@ -24,19 +24,21 @@ class WaydroidSettings(Gtk.Application):
         self.scripts_list_box = self.builder.get_object('scripts_list_box')
 
         free_form_switch = self.builder.get_object('free_form_switch')
-        print("PROP_FREE_FORM: " + utils.get_prop(utils.PROP_FREE_FORM))
-        if utils.get_prop(utils.PROP_FREE_FORM) == 'true':
+        free_form_switch_prop = utils.get_prop(utils.PROP_FREE_FORM)
+        print("PROP_FREE_FORM: " + free_form_switch_prop)
+        if free_form_switch_prop == 'true':
             free_form_switch.set_state(True)
 
         color_invert_switch = self.builder.get_object('color_invert_switch')
-        print("PROP_INVERT_COLORS: " + utils.get_prop(utils.PROP_INVERT_COLORS))
-        if utils.get_prop(utils.PROP_INVERT_COLORS) == 'true':
+        color_invert_switch_prop = utils.get_prop(utils.PROP_INVERT_COLORS)
+        print("PROP_INVERT_COLORS: " + color_invert_switch_prop)
+        if color_invert_switch_prop == 'true':
             color_invert_switch.set_state(True)
 
         suspend_switch = self.builder.get_object('suspend_switch')
-        print("PROP_SUSPEND_INACTIVE: " +
-              utils.get_prop(utils.PROP_SUSPEND_INACTIVE))
-        if utils.get_prop(utils.PROP_SUSPEND_INACTIVE) == 'true':
+        suspend_switch_prop = utils.get_prop(utils.PROP_SUSPEND_INACTIVE)
+        print("PROP_SUSPEND_INACTIVE: " + suspend_switch_prop)
+        if suspend_switch_prop == 'true':
             suspend_switch.set_state(True)
 
         w_width_entry = self.builder.get_object('w_width_entry')
