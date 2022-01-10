@@ -24,7 +24,7 @@ def get_prop(name):
 
 def set_prop(name, value):
     try:
-        subprocess.run('sudo waydroid prop set ' + name + ' ' + value, shell=True)
+        subprocess.run('pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY waydroid prop set ' + name + ' ' + value, shell=True)
         return 'ok'
     except:
         return 'set_prop_error'
