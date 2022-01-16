@@ -16,10 +16,10 @@ SCRIPTS_DIR = str(Path.home()) + '/.local/share/waydroid-settings/scripts/'
 
 
 def get_prop(name):
-	try:
-		return subprocess.check_output(['waydroid', 'prop', 'get', name]).strip().decode("utf-8")
-	except (subprocess.CalledProcessError, FileNotFoundError):
-		return 'get_prop_error'
+    try:
+        return subprocess.check_output(['waydroid', 'prop', 'get', name]).strip().decode("utf-8")
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return 'get_prop_error'
 
 
 def set_prop(name, value):
@@ -28,3 +28,13 @@ def set_prop(name, value):
         return 'ok'
     except:
         return 'set_prop_error'
+
+def is_waydroid_running():
+    try:
+        waydroid_status = subprocess.check_output(['waydroid', 'status']).strip().decode("utf-8")
+        if 'STOPPED' in waydroid_status:
+            return False
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return False
+
+    return True

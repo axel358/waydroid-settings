@@ -10,40 +10,6 @@ gi.require_version('WebKit2', '4.0')
 gi.require_version('Vte', '2.91')
 from gi.repository import Gtk, Vte, WebKit2, GLib
 
-class WDWarning(Gtk.Dialog):
-    def __init__(self, parent):
-        super().__init__(title="Waydroid Not Running!", transient_for=parent, flags=0)
-        self.add_buttons(
-            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK
-        )
-
-        self.set_default_size(250, 100)
-
-        label = Gtk.Label(label="Warning! Waydroid needs to be running for these configs to work")
-
-        label.set_margin_start(15)
-        label.set_margin_end(15)
-        box = self.get_content_area()
-        box.add(label)
-        
-        self.show_all()
-
-
-class DialogWindow(Gtk.Window):
-    def __init__(self):
-        Gtk.Window.__init__(self, title="Waydroid Warning")
-
-        self.set_border_width(12)
-        dialog = WDWarning(self)
-        response = dialog.run()
-
-        if response == Gtk.ResponseType.OK:
-            dialog.destroy()
-        elif response == Gtk.ResponseType.CANCEL:
-            os._exit(os.EX_OK)
-
-        
-
 class WaydroidSettings(Gtk.Application):
     def __init__(self, *args, **kargs):
         super().__init__(*args, application_id='cu.axel.waydroidsettings', **kargs)
@@ -56,13 +22,6 @@ class WaydroidSettings(Gtk.Application):
         docs_web_view_box.pack_start(self.docs_web_view, True, True, 0)
 
         self.scripts_list_box = self.builder.get_object('scripts_list_box')
-        
-        waydroid_status = subprocess.check_output(['waydroid', 'status']).strip().decode("utf-8")
-        status_string = 'STOPPED'
-        if status_string in waydroid_status:
-            print("STOPPED found")
-            win = DialogWindow()
-            win.connect("destroy", Gtk.main_quit)
 
         free_form_switch = self.builder.get_object('free_form_switch')
         free_form_switch_prop = utils.get_prop(utils.PROP_FREE_FORM)
@@ -97,6 +56,9 @@ class WaydroidSettings(Gtk.Application):
         scripts_box.pack_end(scroll_view, True, True, 10)
 
         self.builder.connect_signals(self)
+
+        if not utils.is_waydroid_running():
+            self.show_not_available_dialog()
 
     def do_activate(self):
         if not self.window:
@@ -167,6 +129,15 @@ class WaydroidSettings(Gtk.Application):
                 str_apps_list = '"'+str(apps_entry.get_text().rstrip())+'"'
                 utils.set_prop(utils.PROP_ACTIVE_APPS, str_apps_list)
 
+        dialog.destroy()
+
+    def show_not_available_dialog(self):
+        dialog = Gtk.MessageDialog(transient_for=self.window)
+        dialog.props.message_type=Gtk.MessageType.INFO
+        dialog.props.title = 'Waydroid is not available'
+        dialog.props.text = 'Waydroid is either not installed or currently not running. You need a running instace of Waydroid to change these settings'
+        dialog.add_buttons('OK', Gtk.ResponseType.OK)
+        dialog.run()
         dialog.destroy()
 
     def update_scripts_list(self):
