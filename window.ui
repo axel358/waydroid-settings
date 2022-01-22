@@ -37,7 +37,7 @@
         <property name="can_focus">True</property>
         <signal name="switch-page" handler="on_tab_switched" swapped="no"/>
         <child>
-          <object class="GtkBox">
+          <object class="GtkBox" id="settings_box">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>

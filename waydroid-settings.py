@@ -47,6 +47,7 @@ class WaydroidSettings(Gtk.Application):
         wp_height_entry = self.builder.get_object('wp_height_entry')
 
         scripts_box = self.builder.get_object('scripts_box')
+        settings_box = self.builder.get_object('settings_box')
         scroll_view = Gtk.ScrolledWindow()
         self.terminal = Vte.Terminal()
         self.terminal.set_input_enabled(True)
@@ -55,10 +56,41 @@ class WaydroidSettings(Gtk.Application):
 
         scripts_box.pack_end(scroll_view, True, True, 10)
 
-        self.builder.connect_signals(self)
+        self.builder.connect_signals(self)        
+                
+        if utils.get_waydroid_container_service() != "running":
+            self.show_container_dialog()
+            
+            hbox = Gtk.Box(spacing=6)
+            settings_box.add(hbox)
+
+            button = Gtk.Button.new_with_label("Start Container Service")
+            button.connect("clicked", self.on_click_start_container)
+            hbox.pack_start(button, True, True, 0)
 
         if not utils.is_waydroid_running():
             self.show_not_available_dialog()
+            
+            hbox = Gtk.Box(spacing=6)
+            settings_box.add(hbox)
+
+            button = Gtk.Button.new_with_label("Start Session")
+            button.connect("clicked", self.on_click_start_session)
+            hbox.pack_start(button, True, True, 0)
+            
+            button = Gtk.Button.new_with_label("Start Fullscreen Session")
+            button.connect("clicked", self.on_click_start_fs_session)
+            hbox.pack_start(button, True, True, 0)
+
+
+    def on_click_start_container(self, button):
+                utils.start_container_service()
+
+    def on_click_start_session(self, button):
+                utils.start_session()
+                
+    def on_click_start_fs_session(self, button):
+                utils.start_fs_session()
 
     def do_activate(self):
         if not self.window:
@@ -134,8 +166,17 @@ class WaydroidSettings(Gtk.Application):
     def show_not_available_dialog(self):
         dialog = Gtk.MessageDialog(transient_for=self.window)
         dialog.props.message_type=Gtk.MessageType.INFO
-        dialog.props.title = 'Waydroid is not available'
-        dialog.props.text = 'Waydroid is either not installed or currently not running. You need a running instace of Waydroid to change these settings'
+        dialog.props.title = 'Waydroid session not running'
+        dialog.props.text = 'Waydroid is either not installed or currently not running. Please start the session using the option at the bottom of the next screen. '
+        dialog.add_buttons('OK', Gtk.ResponseType.OK)
+        dialog.run()
+        dialog.destroy()
+    
+    def show_container_dialog(self):
+        dialog = Gtk.MessageDialog(transient_for=self.window)
+        dialog.props.message_type=Gtk.MessageType.INFO
+        dialog.props.title = 'Waydroid container not running'
+        dialog.props.text = 'Waydroid container service is currently not running or waydroid is not installed properly. Please start the service using the option at the bottom of the next screen. '
         dialog.add_buttons('OK', Gtk.ResponseType.OK)
         dialog.run()
         dialog.destroy()
@@ -181,7 +222,7 @@ class WaydroidSettings(Gtk.Application):
         else: interpreter = '/bin/bash'
         help_arg = '-h'
         self.terminal.spawn_async(Vte.PtyFlags.DEFAULT, None, [interpreter, script, help_arg], None, GLib.SpawnFlags.DEFAULT, None,None,-1, None, None)
-
+    
     def on_tab_switched(self, notebook, page, position):
         if position == 1:
             self.docs_web_view.load_uri(utils.DOCS_URL)

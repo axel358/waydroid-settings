@@ -1,4 +1,5 @@
 import subprocess
+import os
 from pathlib import Path
 
 PROP_FREE_FORM = 'persist.waydroid.multi_windows'
@@ -38,3 +39,39 @@ def is_waydroid_running():
         return False
 
     return True
+
+def get_waydroid_container_service():
+    try:
+        waydroid_container_service = subprocess.check_output(['systemctl', 'is-active', 'waydroid-container.service']).strip().decode("utf-8")
+        print(len(waydroid_container_service))
+        print("")
+        print(waydroid_container_service)
+        if 'inactive' in waydroid_container_service:
+            return "container service stopped"
+        else:
+            return "running"        
+        
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        waydroid_container_service = "Failed"
+        return waydroid_container_service
+
+def start_container_service():
+    try:
+        subprocess.run('pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY sudo systemctl restart waydroid-container.service', shell=True)
+        return 'ok'
+    except:
+        return 'service_error'
+
+def start_session():
+    try:
+        os.system("waydroid session start &")
+        return 'ok'
+    except:
+        return 'service_error'
+
+def start_fs_session():
+    try:
+        os.system("waydroid show-full-ui &")
+        return 'ok'
+    except:
+        return 'service_error'
