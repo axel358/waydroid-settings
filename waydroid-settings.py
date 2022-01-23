@@ -5,6 +5,7 @@ import utils
 import glob
 import os
 import subprocess
+import time
 gi.require_version('Gtk', '3.0')
 gi.require_version('WebKit2', '4.0')
 gi.require_version('Vte', '2.91')
@@ -22,7 +23,26 @@ class WaydroidSettings(Gtk.Application):
         docs_web_view_box.pack_start(self.docs_web_view, True, True, 0)
 
         self.scripts_list_box = self.builder.get_object('scripts_list_box')
+        
+        self.reload_values()
 
+        w_width_entry = self.builder.get_object('w_width_entry')
+        w_height_entry = self.builder.get_object('w_height_entry')
+        wp_width_entry = self.builder.get_object('wp_width_entry')
+        wp_height_entry = self.builder.get_object('wp_height_entry')
+
+        scripts_box = self.builder.get_object('scripts_box')
+        scroll_view = Gtk.ScrolledWindow()
+        self.terminal = Vte.Terminal()
+        self.terminal.set_input_enabled(True)
+        self.terminal.set_scroll_on_output(True)
+        scroll_view.add(self.terminal)
+
+        scripts_box.pack_end(scroll_view, True, True, 10)
+
+        self.builder.connect_signals(self)        
+    
+    def reload_values(self):
         free_form_switch = self.builder.get_object('free_form_switch')
         free_form_switch_prop = utils.get_prop(utils.PROP_FREE_FORM)
         print("PROP_FREE_FORM: " + free_form_switch_prop)
@@ -40,57 +60,53 @@ class WaydroidSettings(Gtk.Application):
         print("PROP_SUSPEND_INACTIVE: " + suspend_switch_prop)
         if suspend_switch_prop == 'true':
             suspend_switch.set_state(True)
-
-        w_width_entry = self.builder.get_object('w_width_entry')
-        w_height_entry = self.builder.get_object('w_height_entry')
-        wp_width_entry = self.builder.get_object('wp_width_entry')
-        wp_height_entry = self.builder.get_object('wp_height_entry')
-
-        scripts_box = self.builder.get_object('scripts_box')
+        
         settings_box = self.builder.get_object('settings_box')
-        scroll_view = Gtk.ScrolledWindow()
-        self.terminal = Vte.Terminal()
-        self.terminal.set_input_enabled(True)
-        self.terminal.set_scroll_on_output(True)
-        scroll_view.add(self.terminal)
-
-        scripts_box.pack_end(scroll_view, True, True, 10)
-
-        self.builder.connect_signals(self)        
-                
         if utils.get_waydroid_container_service() != "running":
             self.show_container_dialog()
             
             hbox = Gtk.Box(spacing=6)
             settings_box.add(hbox)
+            hbox.set_margin_top(2.5)
+            hbox.set_margin_bottom(2.5)
 
             button = Gtk.Button.new_with_label("Start Container Service")
+            button.id = "get_waydroid_container_service_button"
             button.connect("clicked", self.on_click_start_container)
-            hbox.pack_start(button, True, True, 0)
+            hbox.pack_start(button, True, True, 10)
 
         if not utils.is_waydroid_running():
             self.show_not_available_dialog()
             
             hbox = Gtk.Box(spacing=6)
             settings_box.add(hbox)
+            hbox.set_margin_top(2.5)
+            hbox.set_margin_bottom(2.5)
 
             button = Gtk.Button.new_with_label("Start Session")
             button.connect("clicked", self.on_click_start_session)
-            hbox.pack_start(button, True, True, 0)
-            
-            button = Gtk.Button.new_with_label("Start Fullscreen Session")
-            button.connect("clicked", self.on_click_start_fs_session)
-            hbox.pack_start(button, True, True, 0)
-
+            hbox.pack_start(button, True, True, 10)
 
     def on_click_start_container(self, button):
-                utils.start_container_service()
+        utils.start_container_service()
+        time.sleep(3)
+        if utils.get_waydroid_container_service() == "running":
+            button.destroy()
+            self.reload_values()
 
     def on_click_start_session(self, button):
-                utils.start_session()
+        utils.start_session()
+        time.sleep(3)
+        if utils.is_waydroid_running():
+            button.destroy()
+            self.reload_values()
                 
     def on_click_start_fs_session(self, button):
-                utils.start_fs_session()
+        utils.start_fs_session()
+        time.sleep(3)
+        if utils.is_waydroid_running():
+            button.destroy()
+            self.reload_values()
 
     def do_activate(self):
         if not self.window:

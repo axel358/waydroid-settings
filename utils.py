@@ -57,6 +57,7 @@ def get_waydroid_container_service():
 
 def start_container_service():
     try:
+        print("starting Container Service")
         subprocess.run('pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY sudo systemctl restart waydroid-container.service', shell=True)
         return 'ok'
     except:
@@ -64,6 +65,7 @@ def start_container_service():
 
 def start_session():
     try:
+        print("starting session")
         os.system("waydroid session start &")
         return 'ok'
     except:
@@ -71,6 +73,7 @@ def start_session():
 
 def start_fs_session():
     try:
+        print("starting fs session")
         os.system("waydroid show-full-ui &")
         return 'ok'
     except:
