@@ -17,14 +17,17 @@ class WaydroidSettings(Gtk.Application):
 
         self.builder = Gtk.Builder.new_from_file('window.ui')
         self.window = None
+        self.refreshing = False
 
         docs_web_view_box = self.builder.get_object('docs_web_view_box')
         self.docs_web_view = WebKit2.WebView()
         docs_web_view_box.pack_start(self.docs_web_view, True, True, 0)
 
         self.scripts_list_box = self.builder.get_object('scripts_list_box')
-        
-        self.load_values()
+        self.free_form_switch = self.builder.get_object('free_form_switch')
+        self.color_invert_switch = self.builder.get_object('color_invert_switch')
+        self.suspend_switch = self.builder.get_object('suspend_switch')
+        self.free_form_switch.connect('state-set', self.toggle_free_form)
         
         w_width_entry = self.builder.get_object('w_width_entry')
         w_height_entry = self.builder.get_object('w_height_entry')
@@ -41,32 +44,15 @@ class WaydroidSettings(Gtk.Application):
         scripts_box.pack_end(scroll_view, True, True, 10)
 
         self.builder.connect_signals(self)
+        self.load_values()
 
     def load_values(self):        
-        free_form_switch = self.builder.get_object('free_form_switch')        
-        free_form_switch_prop = utils.get_prop(utils.PROP_FREE_FORM)
-        print("PROP_FREE_FORM: " + free_form_switch_prop)
-        if free_form_switch_prop == 'true':
-            free_form_switch.set_active(True)
-        else:
-            free_form_switch.set_active(False)
 
-        color_invert_switch = self.builder.get_object('color_invert_switch')
-        color_invert_switch_prop = utils.get_prop(utils.PROP_INVERT_COLORS)
-        print("PROP_INVERT_COLORS: " + color_invert_switch_prop)
-        if color_invert_switch_prop == 'true':
-            color_invert_switch.set_active(True)
-        else:
-            color_invert_switch.set_active(False)
+        self.refreshing = True
+        self.free_form_switch.set_active(utils.get_prop(utils.PROP_FREE_FORM) == 'true' )
+        self.color_invert_switch.set_active(utils.get_prop(utils.PROP_INVERT_COLORS) == 'true')
+        self.suspend_switch.set_active(utils.get_prop(utils.PROP_SUSPEND_INACTIVE) == 'true')
 
-        suspend_switch = self.builder.get_object('suspend_switch')
-        suspend_switch_prop = utils.get_prop(utils.PROP_SUSPEND_INACTIVE)
-        print("PROP_SUSPEND_INACTIVE: " + suspend_switch_prop)
-        if suspend_switch_prop == 'true':
-            suspend_switch.set_active(True)
-        else:
-            suspend_switch.set_active(False)
-        
         settings_box = self.builder.get_object('settings_box')
         if utils.get_waydroid_container_service() != "running":
             self.show_container_dialog()
@@ -104,6 +90,8 @@ class WaydroidSettings(Gtk.Application):
             button.connect("clicked", self.on_click_restart_session)
             hbox.pack_start(button, True, True, 10)
 
+        self.refreshing = False
+
     def on_click_start_container(self, button):
         utils.start_container_service()
         counter = 5
@@ -137,23 +125,17 @@ class WaydroidSettings(Gtk.Application):
 
         self.window.show_all()
 
-    def toggle_free_form(self, switch, gparam):
-        if switch.get_active():
-            utils.set_prop(utils.PROP_FREE_FORM, 'true')
-        else:
-            utils.set_prop(utils.PROP_FREE_FORM, 'false')
+    def toggle_free_form(self, switch, checked):
+        if not self.refreshing:
+            utils.set_prop(utils.PROP_FREE_FORM, str(checked).lower())
 
     def toggle_suspend(self, switch, checked):
-        if switch.get_active():
-            utils.set_prop(utils.PROP_SUSPEND_INACTIVE, 'true')
-        else:
-            utils.set_prop(utils.PROP_SUSPEND_INACTIVE, 'false')
+        if not self.refreshing:
+            utils.set_prop(utils.PROP_SUSPEND_INACTIVE, str(checked).lower())
 
     def toggle_color_inversion(self, switch, checked):
-        if switch.get_active():
-            utils.set_prop(utils.PROP_INVERT_COLORS, 'true')
-        else:
-            utils.set_prop(utils.PROP_INVERT_COLORS, 'false')
+        if not self.refreshing:
+            utils.set_prop(utils.PROP_INVERT_COLORS, str(checked).lower())
 
     def show_ff_dialog(self, button):
         dialog = Gtk.Dialog(title='Excluded apps', use_header_bar=True)
