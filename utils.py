@@ -25,6 +25,7 @@ def get_prop(name):
 
 def set_prop(name, value):
     try:
+        print("Set Prop Running")
         subprocess.run('pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY waydroid prop set ' + name + ' ' + value, shell=True)
         return 'ok'
     except:
@@ -35,6 +36,8 @@ def is_waydroid_running():
         waydroid_status = subprocess.check_output(['waydroid', 'status']).strip().decode("utf-8")
         if 'STOPPED' in waydroid_status:
             return False
+        elif 'RUNNING' in waydroid_status:
+            return True
     except (subprocess.CalledProcessError, FileNotFoundError):
         return False
 
@@ -71,10 +74,12 @@ def start_session():
     except:
         return 'service_error'
 
-def start_fs_session():
+def restart_session():
     try:
-        print("starting fs session")
-        os.system("waydroid show-full-ui &")
+        print("restarting container service")
+        start_container_service()
+        print("restarting session")
+        os.system("waydroid session start &")
         return 'ok'
     except:
         return 'service_error'

@@ -24,8 +24,8 @@ class WaydroidSettings(Gtk.Application):
 
         self.scripts_list_box = self.builder.get_object('scripts_list_box')
         
-        self.reload_values()
-
+        self.load_values()
+        
         w_width_entry = self.builder.get_object('w_width_entry')
         w_height_entry = self.builder.get_object('w_height_entry')
         wp_width_entry = self.builder.get_object('wp_width_entry')
@@ -40,26 +40,32 @@ class WaydroidSettings(Gtk.Application):
 
         scripts_box.pack_end(scroll_view, True, True, 10)
 
-        self.builder.connect_signals(self)        
-    
-    def reload_values(self):
-        free_form_switch = self.builder.get_object('free_form_switch')
+        self.builder.connect_signals(self)
+
+    def load_values(self):        
+        free_form_switch = self.builder.get_object('free_form_switch')        
         free_form_switch_prop = utils.get_prop(utils.PROP_FREE_FORM)
         print("PROP_FREE_FORM: " + free_form_switch_prop)
         if free_form_switch_prop == 'true':
-            free_form_switch.set_state(True)
+            free_form_switch.set_active(True)
+        else:
+            free_form_switch.set_active(False)
 
         color_invert_switch = self.builder.get_object('color_invert_switch')
         color_invert_switch_prop = utils.get_prop(utils.PROP_INVERT_COLORS)
         print("PROP_INVERT_COLORS: " + color_invert_switch_prop)
         if color_invert_switch_prop == 'true':
-            color_invert_switch.set_state(True)
+            color_invert_switch.set_active(True)
+        else:
+            color_invert_switch.set_active(False)
 
         suspend_switch = self.builder.get_object('suspend_switch')
         suspend_switch_prop = utils.get_prop(utils.PROP_SUSPEND_INACTIVE)
         print("PROP_SUSPEND_INACTIVE: " + suspend_switch_prop)
         if suspend_switch_prop == 'true':
-            suspend_switch.set_state(True)
+            suspend_switch.set_active(True)
+        else:
+            suspend_switch.set_active(False)
         
         settings_box = self.builder.get_object('settings_box')
         if utils.get_waydroid_container_service() != "running":
@@ -86,27 +92,43 @@ class WaydroidSettings(Gtk.Application):
             button = Gtk.Button.new_with_label("Start Session")
             button.connect("clicked", self.on_click_start_session)
             hbox.pack_start(button, True, True, 10)
+        
+        if utils.is_waydroid_running():
+            hbox = Gtk.Box(spacing=6)
+            settings_box.add(hbox)
+            hbox.set_margin_top(2.5)
+            hbox.set_margin_bottom(2.5)
+
+            button = Gtk.Button.new_with_label("Retart Container and Session")
+            button.id = "restart_waydroid_container_and_session_button"
+            button.connect("clicked", self.on_click_restart_session)
+            hbox.pack_start(button, True, True, 10)
 
     def on_click_start_container(self, button):
         utils.start_container_service()
-        time.sleep(3)
-        if utils.get_waydroid_container_service() == "running":
-            button.destroy()
-            self.reload_values()
+        counter = 5
+        while not (counter == 0):
+            time.sleep(1)
+            counter = counter - 1
+            if utils.get_waydroid_container_service() == "running":
+                button.destroy()
+                counter = 0
+                self.load_values()
 
     def on_click_start_session(self, button):
         utils.start_session()
-        time.sleep(3)
-        if utils.is_waydroid_running():
-            button.destroy()
-            self.reload_values()
-                
-    def on_click_start_fs_session(self, button):
-        utils.start_fs_session()
-        time.sleep(3)
-        if utils.is_waydroid_running():
-            button.destroy()
-            self.reload_values()
+        counter = 5
+        while not (counter == 0):
+            time.sleep(1)
+            counter = counter - 1
+            if utils.is_waydroid_running():
+                button.destroy()
+                counter = 0
+                self.load_values()
+
+    def on_click_restart_session(self, button):
+        utils.restart_session()
+        self.load_values()
 
     def do_activate(self):
         if not self.window:
@@ -115,20 +137,20 @@ class WaydroidSettings(Gtk.Application):
 
         self.window.show_all()
 
-    def toggle_free_form(self, switch, checked):
-        if checked:
+    def toggle_free_form(self, switch, gparam):
+        if switch.get_active():
             utils.set_prop(utils.PROP_FREE_FORM, 'true')
         else:
             utils.set_prop(utils.PROP_FREE_FORM, 'false')
 
     def toggle_suspend(self, switch, checked):
-        if checked:
+        if switch.get_active():
             utils.set_prop(utils.PROP_SUSPEND_INACTIVE, 'true')
         else:
             utils.set_prop(utils.PROP_SUSPEND_INACTIVE, 'false')
 
     def toggle_color_inversion(self, switch, checked):
-        if checked:
+        if switch.get_active():
             utils.set_prop(utils.PROP_INVERT_COLORS, 'true')
         else:
             utils.set_prop(utils.PROP_INVERT_COLORS, 'false')
