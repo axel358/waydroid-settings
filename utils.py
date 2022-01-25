@@ -13,8 +13,17 @@ PROP_BLACKLISTED_APPS = 'waydroid.blacklist_apps'
 PROP_ACTIVE_APPS = 'waydroid.active_apps'
 DOCS_URL = 'https://docs.waydro.id/'
 HOME_URL = 'https://waydro.id/'
-SCRIPTS_DIR = str(Path.home()) + '/.local/share/waydroid-settings/scripts/'
 
+# Scripts Paths 
+scripts_dir1 = str(Path.home()) + '/.local/share/waydroid-settings/scripts/'
+scripts_dir2 = '/usr/share/waydroid-settings/scripts/'
+
+# Check whether the specified path exists
+# Depending on install type, this might change 
+if os.path.isdir(scripts_dir1):
+    SCRIPTS_DIR = scripts_dir1
+elif os.path.isdir(scripts_dir2):
+    SCRIPTS_DIR = scripts_dir2 
 
 def get_prop(name):
     try:
