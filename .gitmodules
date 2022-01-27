@@ -10,3 +10,6 @@
 [submodule "scripts/waydroid-10-11-switch-script"]
 	path = scripts/waydroid-10-11-switch-script
 	url = https://github.com/electrikjesus/waydroid-10-11-switch-script
+[submodule "scripts/wd-scripts"]
+	path = scripts/wd-scripts
+	url = git@github.com:electrikjesus/wd-scripts.git
