@@ -1,5 +1,5 @@
 [Desktop Entry]
 Type=Application
 Name=Waydroid Settings
-Exec=~/.local/bin/waydroid-settings.sh
+Exec=/usr/bin/waydroid-settings.sh
 Icon=/usr/lib/waydroid/data/AppIcon.png
