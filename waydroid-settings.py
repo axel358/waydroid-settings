@@ -78,8 +78,7 @@ class WaydroidSettings(Gtk.Application):
             button = Gtk.Button.new_with_label("Start Session")
             button.connect("clicked", self.on_click_start_session)
             hbox.pack_start(button, True, True, 10)
-        
-        if utils.is_waydroid_running():
+        else:
             hbox = Gtk.Box(spacing=6)
             settings_box.add(hbox)
             hbox.set_margin_top(2.5)
@@ -89,6 +88,36 @@ class WaydroidSettings(Gtk.Application):
             button.id = "restart_waydroid_container_and_session_button"
             button.connect("clicked", self.on_click_restart_session)
             hbox.pack_start(button, True, True, 10)
+            
+            hbox2 = Gtk.Box(spacing=6)
+            settings_box.add(hbox2)
+            hbox2.set_margin_top(2.5)
+            hbox2.set_margin_bottom(2.5)
+
+            button2 = Gtk.Button.new_with_label("Stop Session")
+            button2.id = "stop_waydroid_session_button"
+            button2.connect("clicked", self.on_click_stop_session)
+            hbox2.pack_start(button2, True, True, 10)
+            
+            hbox3 = Gtk.Box(spacing=6)
+            settings_box.add(hbox3)
+            hbox3.set_margin_top(2.5)
+            hbox3.set_margin_bottom(2.5)
+
+            button3 = Gtk.Button.new_with_label("Freeze Container")
+            button3.id = "freeze_waydroid_container_button"
+            button3.connect("clicked", self.on_click_freeze_container)
+            hbox3.pack_start(button3, True, True, 10)
+            
+            hbox4 = Gtk.Box(spacing=6)
+            settings_box.add(hbox4)
+            hbox4.set_margin_top(2.5)
+            hbox4.set_margin_bottom(2.5)
+
+            button4 = Gtk.Button.new_with_label("Unfreeze Container")
+            button4.id = "unfreeze_waydroid_container_button"
+            button4.connect("clicked", self.on_click_unfreeze_container)
+            hbox4.pack_start(button4, True, True, 10)
 
         self.refreshing = False
 
@@ -116,6 +145,18 @@ class WaydroidSettings(Gtk.Application):
 
     def on_click_restart_session(self, button):
         utils.restart_session()
+        self.load_values()
+    
+    def on_click_stop_session(self, button):
+        utils.stop_session()
+        self.load_values()
+    
+    def on_click_freeze_container(self, button):
+        utils.freeze_container()
+        self.load_values()
+        
+    def on_click_unfreeze_container(self, button):
+        utils.unfreeze_container()
         self.load_values()
 
     def do_activate(self):

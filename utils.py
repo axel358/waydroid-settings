@@ -75,10 +75,34 @@ def start_container_service():
     except:
         return 'service_error'
 
+def freeze_container():
+    try:
+        print("Freezing Container Service")
+        subprocess.run('pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY sudo waydroid container freeze', shell=True)
+        return 'ok'
+    except:
+        return 'service_error'
+
+def unfreeze_container():
+    try:
+        print("Unfreezing Container Service")
+        subprocess.run('pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY sudo waydroid container unfreeze &', shell=True)
+        return 'ok'
+    except:
+        return 'service_error'
+
 def start_session():
     try:
         print("starting session")
         os.system("waydroid session start &")
+        return 'ok'
+    except:
+        return 'service_error'
+
+def stop_session():
+    try:
+        print("starting session")
+        os.system("waydroid session stop &")
         return 'ok'
     except:
         return 'service_error'
