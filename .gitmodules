@@ -1,6 +1,3 @@
-[submodule "scripts/waydroid_extras"]
-	path = scripts/waydroid_extras
-	url = https://github.com/casualsnek/waydroid_script
 [submodule "scripts/quackdoc_scripts"]
 	path = scripts/quackdoc_scripts
 	url = https://github.com/Quackdoc/waydroid-scripts
