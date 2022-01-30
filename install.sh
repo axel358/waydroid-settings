@@ -10,6 +10,24 @@
 
 SCRIPT_FILE=/usr/share/waydroid-settings/waydroid-settings.sh
 HPATH=$HOME
+CLEANUP="false"
+if [ -f $HPATH/.local/share/waydroid-settings/waydroid-settings.sh ]; then
+	CLEANUP="true"
+fi
+if [ -f /usr/share/waydroid-settings/waydroid-settings.sh ]; then
+	read -p "Do you want to update Waydroid-Settings (y/n)?" choice
+	case "$choice" in 
+	  y|Y ) echo "yes" && CLEANUP="true";;
+	  n|N ) echo "no" && echo "OK. You're the boss";;
+	  * ) echo "invalid";;
+	esac
+	
+fi
+
+if [ "$CLEANUP" == "true" ]; then
+	sudo rm -rf $HPATH/.cache/waydroid-settings  $HPATH/.local/share/applications/waydroid-settings.desktop $HPATH/.local/share/waydroid-settings /usr/share/waydroid-settings /usr/bin/waydroid-settings.sh /usr/local/share/applications/waydroid-settings.desktop /usr/local/share/applications/wd-settings.desktop
+	echo "old versions of waydroid-settings are cleared. Moving on to installing updates"
+fi
 
 if test -f "$SCRIPT_FILE"; then
     echo "$SCRIPT_FILE exists."
