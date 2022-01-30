@@ -24,8 +24,8 @@ else
 	sudo mv waydroid-settings/ /usr/share/
 fi
 
-cp -f /usr/share/waydroid-settings/waydroid-settings.sh /usr/bin/
+sudo cp -f /usr/share/waydroid-settings/waydroid-settings.sh /usr/bin/
 sudo chmod +x /usr/bin/waydroid-settings.sh
-cp -f /usr/share/waydroid-settings/waydroid-settings.desktop /usr/local/share/applications/
+sudo cp -f /usr/share/waydroid-settings/waydroid-settings.desktop /usr/local/share/applications/
 
 echo "All set. Thanks for installing."
