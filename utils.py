@@ -13,7 +13,19 @@ PROP_BLACKLISTED_APPS = 'waydroid.blacklist_apps'
 PROP_ACTIVE_APPS = 'waydroid.active_apps'
 DOCS_URL = 'https://docs.waydro.id/'
 HOME_URL = 'https://waydro.id/'
-SYSTEM_IMAGE = '/var/lib/waydroid/images/system.img'
+SYSTEM_IMAGE = ''
+BASE_PROP_LOC = '/var/lib/waydroid/waydroid_base.prop'
+
+# System.img paths
+SYSTEM_IMAGE1 = '/var/lib/waydroid/images/system.img'
+SYSTEM_IMAGE2 = '/usr/share/waydroid-extra/images/system.img'
+
+# Check whether the specified path exists
+# Depending on install type, this might change 
+if os.path.exists(SYSTEM_IMAGE1):
+    SYSTEM_IMAGE = SYSTEM_IMAGE1
+elif os.path.exists(SYSTEM_IMAGE2):
+    SYSTEM_IMAGE = SYSTEM_IMAGE2
 
 # Scripts Paths 
 scripts_dir1 = str(Path.home()) + '/.local/share/waydroid-settings/scripts/'
@@ -43,8 +55,25 @@ def get_prop(name):
         return 'get_prop_error'
 
 
+def get_kb_disabled_state():
+    kb_val = subprocess.check_output('echo "pm list packages -d 2>/dev/null | grep com.android.inputmethod.latin | wc -l" | pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY sudo waydroid shell', shell=True, text=True)
+    print(kb_val)
+    return kb_val
+    
+    
+def test_sudo(str_pass_entry):
+    pw_val = subprocess.check_output('echo "' + str_pass_entry + '" | sudo echo 1', shell=True, text=True)
+    print(pw_val)
+    return pw_val
+
+
 def set_prop(name, value):
     return run('waydroid prop set ' + name + ' ' + value, True)
+
+
+def run_shell_command(command):
+    return subprocess.run('echo "' + command + '" | pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY sudo waydroid shell', shell=True, text=True)
+        
 
 def is_waydroid_running():
     try:
@@ -52,6 +81,7 @@ def is_waydroid_running():
         return 'RUNNING' in waydroid_status
     except (subprocess.CalledProcessError, FileNotFoundError):
         return False
+
 
 def is_container_active():
     try:
@@ -83,14 +113,73 @@ def restart_session():
     
 def get_image_size():
     try:
-        return os.path.getsize(SYSTEM_IMAGE)
+        return str('{:.3f}'.format(os.path.getsize(SYSTEM_IMAGE)/(1024*1024*1024))) + ' GB'
     except FileNotFoundError:
         return 0
         
 def resize_image(new_size):
-    run('resize2fs '+ new_size + 'G ' + SYSTEM_IMAGE, True)
+    run('systemctl stop waydroid-container.service', True)
+    run('resize2fs '+ (SYSTEM_IMAGE) + ' ' + new_size + 'G' , True)
+    run('e2fsck -f ' + (SYSTEM_IMAGE), True)
+    start_container_service()
+    start_session()
     
 def wipe_data():
-    run('rm -r ' + str(Path.home()) + '/.local/share/waydroid/data')
+    run('systemctl stop waydroid-container.service', True)
+    run('rm -rf ' + str(Path.home()) + '/.local/share/waydroid/data', True)
     run('waydroid init -f', True)
+    start_container_service()
+    start_session()
+
+def search_base_prop(config):
+    string1 = config
+    file1 = open(BASE_PROP_LOC, "r")
+    flag = 0
+    index = 0
+    for line in file1:
+        index = index + 1
+        if string1 in line:
+          flag = 1
+          break
+    if flag == 0:
+       print('String', string1 , 'Not Found')
+       return False
+    else:
+       print('String', string1, 'Found In Line', index)
+       return True
+    file1.close()
+
+def enable_navbar():
+    try:
+        print('enabling navbar')
+        run('sed -i "/qemu.hw.mainkeys=1/d" ' + BASE_PROP_LOC)
+        restart_session()
+        return True
+    except:
+        return False
+
+def disable_navbar():
+    try:
+        print('disabling navbar')
+        run('echo "qemu.hw.mainkeys=1" >> ' + BASE_PROP_LOC)
+        restart_session()
+        return True
+    except:
+        return False
+
     
+def enable_kb():
+    try:
+        print('enabling keyboard')
+        run_shell_command("pm enable com.android.inputmethod.latin")
+        return True
+    except:
+        return False
+
+def disable_kb():
+    try:
+        print('disabling keyboard')
+        run_shell_command("pm disable com.android.inputmethod.latin")
+        return True
+    except:
+        return False

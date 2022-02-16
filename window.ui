@@ -25,7 +25,7 @@
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Enable free form windows</property>
+                    <property name="label" translatable="yes">Enable multi-window mode (only works on Gnome/Mutter)</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -560,6 +560,7 @@
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
+                <property name="sensitive">False</property>                
                 <property name="can-focus">False</property>
                 <child>
                   <object class="GtkLabel">
@@ -601,6 +602,7 @@
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="sensitive">False</property>   
                 <child>
                   <object class="GtkLabel">
                     <property name="visible">True</property>

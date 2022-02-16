@@ -28,7 +28,12 @@ class WaydroidSettings(Gtk.Application):
         self.free_form_switch = self.builder.get_object('free_form_switch')
         self.color_invert_switch = self.builder.get_object('color_invert_switch')
         self.suspend_switch = self.builder.get_object('suspend_switch')
+        self.nav_btns_switch = self.builder.get_object('nav_btns_switch')
+        self.soft_kb_switch = self.builder.get_object('soft_kb_switch')
+        
         self.free_form_switch.connect('state-set', self.toggle_free_form)
+        self.nav_btns_switch.connect('state-set', self.toggle_navbar)
+        self.soft_kb_switch.connect('state-set', self.toggle_keyboard)
 
         w_width_entry = self.builder.get_object('w_width_entry')
         w_height_entry = self.builder.get_object('w_height_entry')
@@ -45,6 +50,7 @@ class WaydroidSettings(Gtk.Application):
         scripts_box.pack_end(scroll_view, True, True, 10)
 
         self.builder.connect_signals(self)
+        # ~ self.show_password_dialog()
         self.load_values()
 
     def load_values(self):
@@ -53,6 +59,8 @@ class WaydroidSettings(Gtk.Application):
         self.free_form_switch.set_active(utils.get_prop(utils.PROP_FREE_FORM) == 'true' )
         self.color_invert_switch.set_active(utils.get_prop(utils.PROP_INVERT_COLORS) == 'true')
         self.suspend_switch.set_active(utils.get_prop(utils.PROP_SUSPEND_INACTIVE) == 'true')
+        self.nav_btns_switch.set_active(utils.search_base_prop('qemu.hw.mainkeys=1') == True)
+        self.soft_kb_switch.set_active(bool(utils.get_kb_disabled_state()) == 1)
 
         settings_box = self.builder.get_object('settings_box')
         if not utils.is_container_active():
@@ -175,6 +183,20 @@ class WaydroidSettings(Gtk.Application):
         if not self.refreshing:
             utils.set_prop(utils.PROP_SUSPEND_INACTIVE, str(checked).lower())
 
+    def toggle_navbar(self, switch, checked):
+        if not self.refreshing:
+            if checked == True:
+                utils.disable_navbar()
+            else:
+                utils.enable_navbar()
+    
+    def toggle_keyboard(self, switch, checked):
+        if not self.refreshing:
+            if checked == True:
+                utils.disable_kb()
+            else:
+                utils.enable_kb()
+    
     def toggle_color_inversion(self, switch, checked):
         if not self.refreshing:
             utils.set_prop(utils.PROP_INVERT_COLORS, str(checked).lower())
@@ -224,7 +246,49 @@ class WaydroidSettings(Gtk.Application):
                 utils.set_prop(utils.PROP_ACTIVE_APPS, str_apps_list)
 
         dialog.destroy()
+    
+    
+    def show_password_dialog(self):
+        dialog = Gtk.Dialog(title='Root Permission Required', use_header_bar=True)
+        dialog.add_buttons(
+            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK
+        )
+        dialog.get_content_area().pack_start(Gtk.Label(label='Please enter root password'), True, True,
+                                             10)
+        pass_entry = Gtk.Entry()
+        pass_entry.set_visibility(False)
+        pass_entry.set_margin_start(5)
+        pass_entry.set_margin_end(5)
+        dialog.get_content_area().pack_start(pass_entry, True, True, 10)
+        sudo_pass = ''
+        pass_entry.set_text(sudo_pass)
+        dialog.show_all()
+        response = dialog.run()
 
+        if response == Gtk.ResponseType.OK:
+            if len(pass_list:= pass_entry.get_text()) > 0:
+                str_pass_entry = '"'+str(pass_entry.get_text().rstrip())+'"'
+                check_pwd = utils.test_sudo(str_pass_entry)
+                print(check_pwd)
+                if check_pwd != 1:
+                    self.show_wrong_password_dialog()
+                    dialog.destroy()
+                    self.show_password_dialog()
+                else:
+                    dialog.destroy()
+
+        
+
+    def show_wrong_password_dialog(self):
+        dialog = Gtk.MessageDialog(transient_for=self.window)
+        dialog.props.message_type=Gtk.MessageType.INFO
+        dialog.props.title = 'Authorization Issue'
+        dialog.props.text = 'The password you entered was not correct. Please try again'
+        dialog.add_buttons('OK', Gtk.ResponseType.OK)
+        dialog.run()
+        dialog.destroy()
+        # ~ self.show_password_dialog()
+    
     def show_not_available_dialog(self):
         dialog = Gtk.MessageDialog(transient_for=self.window)
         dialog.props.message_type=Gtk.MessageType.INFO
