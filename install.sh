@@ -44,6 +44,7 @@ fi
 
 sudo cp /usr/share/waydroid-settings/waydroid-settings.sh /usr/bin/
 sudo chmod +x /usr/bin/waydroid-settings.sh
+sudo cp /usr/share/waydroid-settings/icon2.png /usr/lib/waydroid/data/wd-settings-icon.png
 sudo cp /usr/share/waydroid-settings/waydroid-settings.desktop /usr/local/share/applications/
 
 echo "All set. Thanks for installing."
