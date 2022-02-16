@@ -13,6 +13,7 @@ PROP_BLACKLISTED_APPS = 'waydroid.blacklist_apps'
 PROP_ACTIVE_APPS = 'waydroid.active_apps'
 DOCS_URL = 'https://docs.waydro.id/'
 HOME_URL = 'https://waydro.id/'
+SYSTEM_IMAGE = '/var/lib/waydroid/images/system.img'
 
 # Scripts Paths 
 scripts_dir1 = str(Path.home()) + '/.local/share/waydroid-settings/scripts/'
@@ -23,7 +24,17 @@ scripts_dir2 = '/usr/share/waydroid-settings/scripts/'
 if os.path.isdir(scripts_dir1):
     SCRIPTS_DIR = scripts_dir1
 elif os.path.isdir(scripts_dir2):
-    SCRIPTS_DIR = scripts_dir2 
+    SCRIPTS_DIR = scripts_dir2
+    
+def run(command, as_root=False):
+    try:
+        if as_root:
+            subprocess.run('pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY sudo ' + command, shell=True)
+        else:
+            subprocess.run(command, shell=True)
+        return True
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return False
 
 def get_prop(name):
     try:
@@ -33,86 +44,53 @@ def get_prop(name):
 
 
 def set_prop(name, value):
-    try:
-        print("Set Prop Running")
-        subprocess.run('pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY waydroid prop set ' + name + ' ' + value, shell=True)
-        return 'ok'
-    except:
-        return 'set_prop_error'
+    return run('waydroid prop set ' + name + ' ' + value, True)
 
 def is_waydroid_running():
     try:
         waydroid_status = subprocess.check_output(['waydroid', 'status']).strip().decode("utf-8")
-        if 'STOPPED' in waydroid_status:
-            return False
-        elif 'RUNNING' in waydroid_status:
-            return True
+        return 'RUNNING' in waydroid_status
     except (subprocess.CalledProcessError, FileNotFoundError):
         return False
 
-    return True
-
-def get_waydroid_container_service():
+def is_container_active():
     try:
-        waydroid_container_service = subprocess.check_output(['systemctl', 'is-active', 'waydroid-container.service']).strip().decode("utf-8")
-        print(len(waydroid_container_service))
-        print("")
-        print(waydroid_container_service)
-        if 'inactive' in waydroid_container_service:
-            return "container service stopped"
-        else:
-            return "running"        
-        
+        container_status = subprocess.check_output(['systemctl', 'is-active', 'waydroid-container.service']).strip().decode("utf-8")
+        return 'active' in container_status
     except (subprocess.CalledProcessError, FileNotFoundError):
-        waydroid_container_service = "Failed"
-        return waydroid_container_service
+        return False
 
 def start_container_service():
-    try:
-        print("starting Container Service")
-        subprocess.run('pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY sudo systemctl restart waydroid-container.service', shell=True)
-        return 'ok'
-    except:
-        return 'service_error'
-
+    return run('systemctl restart waydroid-container.service', True)
+        
 def freeze_container():
-    try:
-        print("Freezing Container Service")
-        subprocess.run('pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY sudo waydroid container freeze', shell=True)
-        return 'ok'
-    except:
-        return 'service_error'
+    return run('waydroid container freeze', True)
 
 def unfreeze_container():
-    try:
-        print("Unfreezing Container Service")
-        subprocess.run('pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY sudo waydroid container unfreeze &', shell=True)
-        return 'ok'
-    except:
-        return 'service_error'
+    return run('waydroid container unfreeze &', True)
 
 def start_session():
-    try:
-        print("starting session")
-        os.system("waydroid session start &")
-        return 'ok'
-    except:
-        return 'service_error'
+    return run('waydroid session start &')
 
 def stop_session():
-    try:
-        print("starting session")
-        os.system("waydroid session stop &")
-        return 'ok'
-    except:
-        return 'service_error'
+    return run('waydroid session stop &')
 
 def restart_session():
+    print("restarting container service")
+    start_container_service()
+    print("restarting session")
+    start_session()
+    
+def get_image_size():
     try:
-        print("restarting container service")
-        start_container_service()
-        print("restarting session")
-        os.system("waydroid session start &")
-        return 'ok'
-    except:
-        return 'service_error'
+        return os.path.getsize(SYSTEM_IMAGE)
+    except FileNotFoundError:
+        return 0
+        
+def resize_image(new_size):
+    run('resize2fs '+ new_size + 'G ' + SYSTEM_IMAGE, True)
+    
+def wipe_data():
+    run('rm -r ' + str(Path.home()) + '/.local/share/waydroid/data')
+    run('waydroid init -f', True)
+    
