@@ -69,7 +69,7 @@ def test_sudo(str_pass_entry):
     except subprocess.CalledProcessError as e:
         pw_val = 'wrong_password'
     print(pw_val)
-    if str(pw_val.strip()) == '1':
+    if str(pw_val.strip()) == '1' or str(pw_val.strip()) == '[sudo] password for admin: 1':
         print("pw accepted")
         ROOT_PW = str_pass_entry
         return True
