@@ -83,7 +83,7 @@ def set_prop(name, value):
 
 
 def run_shell_command(command):
-    return subprocess.run('echo "' + command + '" | echo "' + ROOT_PW + '" | sudo waydroid shell', shell=True, text=True)
+    return subprocess.run('echo "' + ROOT_PW + '" | echo "' + command + '" | sudo waydroid shell', shell=True, text=True)
         
 
 def is_waydroid_running():
