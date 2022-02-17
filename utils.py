@@ -15,6 +15,7 @@ DOCS_URL = 'https://docs.waydro.id/'
 HOME_URL = 'https://waydro.id/'
 SYSTEM_IMAGE = ''
 BASE_PROP_LOC = '/var/lib/waydroid/waydroid_base.prop'
+ROOT_PW = ''
 
 # System.img paths
 SYSTEM_IMAGE1 = '/var/lib/waydroid/images/system.img'
@@ -41,7 +42,7 @@ elif os.path.isdir(scripts_dir2):
 def run(command, as_root=False):
     try:
         if as_root:
-            subprocess.run('pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY sudo ' + command, shell=True)
+            subprocess.run('echo "' + ROOT_PW + '" | sudo -S ' + command, shell=True)
         else:
             subprocess.run(command, shell=True)
         return True
@@ -56,15 +57,22 @@ def get_prop(name):
 
 
 def get_kb_disabled_state():
-    kb_val = subprocess.check_output('echo "pm list packages -d 2>/dev/null | grep com.android.inputmethod.latin | wc -l" | pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY sudo waydroid shell', shell=True, text=True)
+    kb_val = subprocess.check_output('echo "' + ROOT_PW + '" | echo "pm list packages -d 2>/dev/null | grep com.android.inputmethod.latin | wc -l" | sudo -S waydroid shell', shell=True, text=True)
     print(kb_val)
     return kb_val
     
     
 def test_sudo(str_pass_entry):
-    pw_val = subprocess.check_output('echo "' + str_pass_entry + '" | sudo echo 1', shell=True, text=True)
+    pwcommand = 'echo "' + str(str_pass_entry) + '" | sudo -S echo 1'
+    pw_val = subprocess.check_output(pwcommand, shell=True, text=True)
     print(pw_val)
-    return pw_val
+    if str(pw_val.strip()) == '1':
+        print("pw accepted")
+        ROOT_PW = str_pass_entry
+        return True
+    else:
+        print("pw rejected")
+        return False
 
 
 def set_prop(name, value):
@@ -72,7 +80,7 @@ def set_prop(name, value):
 
 
 def run_shell_command(command):
-    return subprocess.run('echo "' + command + '" | pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY sudo waydroid shell', shell=True, text=True)
+    return subprocess.run('echo "' + command + '" | echo "' + ROOT_PW + '" | sudo waydroid shell', shell=True, text=True)
         
 
 def is_waydroid_running():

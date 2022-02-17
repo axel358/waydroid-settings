@@ -50,7 +50,7 @@ class WaydroidSettings(Gtk.Application):
         scripts_box.pack_end(scroll_view, True, True, 10)
 
         self.builder.connect_signals(self)
-        # ~ self.show_password_dialog()
+        self.show_password_dialog()
         self.load_values()
 
     def load_values(self):
@@ -270,7 +270,7 @@ class WaydroidSettings(Gtk.Application):
                 str_pass_entry = '"'+str(pass_entry.get_text().rstrip())+'"'
                 check_pwd = utils.test_sudo(str_pass_entry)
                 print(check_pwd)
-                if check_pwd != 1:
+                if check_pwd != True:
                     self.show_wrong_password_dialog()
                     dialog.destroy()
                     self.show_password_dialog()
