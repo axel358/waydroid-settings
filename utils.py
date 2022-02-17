@@ -64,7 +64,10 @@ def get_kb_disabled_state():
     
 def test_sudo(str_pass_entry):
     pwcommand = 'echo "' + str(str_pass_entry) + '" | sudo -S echo 1'
-    pw_val = subprocess.check_output(pwcommand, shell=True, text=True)
+    try:
+        pw_val = subprocess.check_output(pwcommand, shell=True, text=True,stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as e:
+        pw_val = 'wrong_password'
     print(pw_val)
     if str(pw_val.strip()) == '1':
         print("pw accepted")
