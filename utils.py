@@ -38,7 +38,8 @@ if os.path.isdir(scripts_dir1):
     SCRIPTS_DIR = scripts_dir1
 elif os.path.isdir(scripts_dir2):
     SCRIPTS_DIR = scripts_dir2
-    
+
+
 def run(command, as_root=False):
     try:
         if as_root:
@@ -49,6 +50,7 @@ def run(command, as_root=False):
     except (subprocess.CalledProcessError, FileNotFoundError):
         return False
 
+
 def get_prop(name):
     try:
         return subprocess.check_output(['waydroid', 'prop', 'get', name]).strip().decode("utf-8")
@@ -56,25 +58,23 @@ def get_prop(name):
         return 'get_prop_error'
 
 
-def get_kb_disabled_state():
-    kb_val = subprocess.check_output('echo "' + ROOT_PW + '" | echo "pm list packages -d 2>/dev/null | grep com.android.inputmethod.latin | wc -l" | sudo -S waydroid shell', shell=True, text=True)
-    print(kb_val)
-    return kb_val
-    
-    
-def test_sudo(str_pass_entry):
-    pwcommand = 'echo "' + str(str_pass_entry) + '" | sudo -S echo 1'
+def is_kb_disabled():
     try:
-        pw_val = subprocess.check_output(pwcommand, shell=True, text=True,stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as e:
-        pw_val = 'wrong_password'
-    print(pw_val)
-    if str(pw_val.strip()) == '1' or str(pw_val.strip()) == '[sudo] password for admin: 1':
-        print("pw accepted")
-        ROOT_PW = str_pass_entry
+        kb_val = subprocess.check_output(
+            'echo "' + ROOT_PW + '" | echo "pm list packages -d 2>/dev/null | grep com.android.inputmethod.latin | wc '
+                                 '-l" '
+                                 '| sudo -S waydroid shell',
+            shell=True, text=True)
+        return '0' in kb_val
+    except subprocess.CalledProcessError:
+        return False
+
+
+def is_correct_pass(password):
+    try:
+        subprocess.check_output('echo "' + password + '" | sudo -S echo 1', shell=True)
         return True
-    else:
-        print("pw rejected")
+    except subprocess.CalledProcessError:
         return False
 
 
@@ -83,8 +83,9 @@ def set_prop(name, value):
 
 
 def run_shell_command(command):
-    return subprocess.run('echo "' + ROOT_PW + '" | echo "' + command + '" | sudo waydroid shell', shell=True, text=True)
-        
+    return subprocess.run('echo "' + ROOT_PW + '" | echo "' + command + '" | sudo waydroid shell', shell=True,
+                          text=True)
+
 
 def is_waydroid_running():
     try:
@@ -96,45 +97,55 @@ def is_waydroid_running():
 
 def is_container_active():
     try:
-        container_status = subprocess.check_output(['systemctl', 'is-active', 'waydroid-container.service']).strip().decode("utf-8")
+        container_status = subprocess.check_output(
+            ['systemctl', 'is-active', 'waydroid-container.service']).strip().decode("utf-8")
         return 'active' in container_status
     except (subprocess.CalledProcessError, FileNotFoundError):
         return False
 
+
 def start_container_service():
     return run('systemctl restart waydroid-container.service', True)
-        
+
+
 def freeze_container():
     return run('waydroid container freeze', True)
+
 
 def unfreeze_container():
     return run('waydroid container unfreeze &', True)
 
+
 def start_session():
     return run('waydroid session start &')
 
+
 def stop_session():
     return run('waydroid session stop &')
+
 
 def restart_session():
     print("restarting container service")
     start_container_service()
     print("restarting session")
     start_session()
-    
+
+
 def get_image_size():
     try:
-        return str('{:.3f}'.format(os.path.getsize(SYSTEM_IMAGE)/(1024*1024*1024))) + ' GB'
+        return str('{:.3f}'.format(os.path.getsize(SYSTEM_IMAGE) / (1024 * 1024 * 1024))) + ' GB'
     except FileNotFoundError:
         return 0
-        
+
+
 def resize_image(new_size):
     run('systemctl stop waydroid-container.service', True)
-    run('resize2fs '+ (SYSTEM_IMAGE) + ' ' + new_size + 'G' , True)
-    run('e2fsck -f ' + (SYSTEM_IMAGE), True)
+    run('resize2fs ' + SYSTEM_IMAGE + ' ' + new_size + 'G', True)
+    run('e2fsck -f ' + SYSTEM_IMAGE, True)
     start_container_service()
     start_session()
-    
+
+
 def wipe_data():
     run('systemctl stop waydroid-container.service', True)
     run('rm -rf ' + str(Path.home()) + '/.local/share/waydroid/data', True)
@@ -142,23 +153,18 @@ def wipe_data():
     start_container_service()
     start_session()
 
-def search_base_prop(config):
-    string1 = config
-    file1 = open(BASE_PROP_LOC, "r")
-    flag = 0
-    index = 0
-    for line in file1:
-        index = index + 1
-        if string1 in line:
-          flag = 1
-          break
-    if flag == 0:
-       print('String', string1 , 'Not Found')
-       return False
-    else:
-       print('String', string1, 'Found In Line', index)
-       return True
-    file1.close()
+
+def search_base_prop(prop):
+    try:
+        prop_file = open(BASE_PROP_LOC, "r")
+        for line in prop_file:
+            if prop in line:
+                return True
+    except FileNotFoundError:
+        return False
+
+    return False
+
 
 def enable_navbar():
     try:
@@ -169,6 +175,7 @@ def enable_navbar():
     except:
         return False
 
+
 def disable_navbar():
     try:
         print('disabling navbar')
@@ -178,7 +185,7 @@ def disable_navbar():
     except:
         return False
 
-    
+
 def enable_kb():
     try:
         print('enabling keyboard')
@@ -186,6 +193,7 @@ def enable_kb():
         return True
     except:
         return False
+
 
 def disable_kb():
     try:

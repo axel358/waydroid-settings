@@ -7,7 +7,7 @@ import os
 import subprocess
 import time
 gi.require_version('Gtk', '3.0')
-gi.require_version('WebKit2', '4.0')
+gi.require_version('WebKit2', '4.1')
 gi.require_version('Vte', '2.91')
 from gi.repository import Gtk, Vte, WebKit2, GLib
 
@@ -59,8 +59,8 @@ class WaydroidSettings(Gtk.Application):
         self.free_form_switch.set_active(utils.get_prop(utils.PROP_FREE_FORM) == 'true' )
         self.color_invert_switch.set_active(utils.get_prop(utils.PROP_INVERT_COLORS) == 'true')
         self.suspend_switch.set_active(utils.get_prop(utils.PROP_SUSPEND_INACTIVE) == 'true')
-        self.nav_btns_switch.set_active(utils.search_base_prop('qemu.hw.mainkeys=1') == True)
-        self.soft_kb_switch.set_active(bool(utils.get_kb_disabled_state()) == 1)
+        self.nav_btns_switch.set_active(utils.search_base_prop('qemu.hw.mainkeys=1'))
+        self.soft_kb_switch.set_active(utils.is_kb_disabled())
 
         settings_box = self.builder.get_object('settings_box')
         if not utils.is_container_active():
@@ -192,7 +192,7 @@ class WaydroidSettings(Gtk.Application):
     
     def toggle_keyboard(self, switch, checked):
         if not self.refreshing:
-            if checked == True:
+            if checked:
                 utils.disable_kb()
             else:
                 utils.enable_kb()
@@ -260,24 +260,17 @@ class WaydroidSettings(Gtk.Application):
         pass_entry.set_margin_start(5)
         pass_entry.set_margin_end(5)
         dialog.get_content_area().pack_start(pass_entry, True, True, 10)
-        sudo_pass = ''
-        pass_entry.set_text(sudo_pass)
         dialog.show_all()
         response = dialog.run()
 
         if response == Gtk.ResponseType.OK:
-            if len(pass_list:= pass_entry.get_text()) > 0:
-                str_pass_entry = '"'+str(pass_entry.get_text().rstrip())+'"'
-                check_pwd = utils.test_sudo(str_pass_entry)
-                print(check_pwd)
-                if check_pwd != True:
+            if len(password := pass_entry.get_text().strip()) > 0:
+                if utils.is_correct_pass(password):
+                    dialog.destroy()
+                else:
                     self.show_wrong_password_dialog()
                     dialog.destroy()
                     self.show_password_dialog()
-                else:
-                    dialog.destroy()
-
-        
 
     def show_wrong_password_dialog(self):
         dialog = Gtk.MessageDialog(transient_for=self.window)
