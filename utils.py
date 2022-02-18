@@ -60,12 +60,9 @@ def get_prop(name):
 
 def is_kb_disabled():
     try:
-        kb_val = subprocess.check_output(
-            'echo "' + ROOT_PW + '" | echo "pm list packages -d 2>/dev/null | grep com.android.inputmethod.latin | wc '
-                                 '-l" '
-                                 '| sudo -S waydroid shell',
-            shell=True, text=True)
-        return '0' in kb_val
+        kb_val = subprocess.check_output('echo "' + ROOT_PW + '" | echo "pm list packages -d 2>/dev/null | grep com.android.inputmethod.latin | wc -l" | sudo -S waydroid shell', shell=True)
+        print("kb_val: " + str(kb_val))
+        return '1' in str(kb_val)
     except subprocess.CalledProcessError:
         return False
 
@@ -83,8 +80,7 @@ def set_prop(name, value):
 
 
 def run_shell_command(command):
-    return subprocess.run('echo "' + ROOT_PW + '" | echo "' + command + '" | sudo waydroid shell', shell=True,
-                          text=True)
+    return subprocess.run('echo "' + ROOT_PW + '" | echo "' + command + '" | sudo -S waydroid shell', shell=True, text=True)
 
 
 def is_waydroid_running():
