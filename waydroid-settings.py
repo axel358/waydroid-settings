@@ -259,6 +259,7 @@ class WaydroidSettings(Gtk.Application):
         pass_entry.set_visibility(False)
         pass_entry.set_margin_start(5)
         pass_entry.set_margin_end(5)
+                
         dialog.get_content_area().pack_start(pass_entry, True, True, 10)
         dialog.show_all()
         response = dialog.run()
@@ -343,7 +344,7 @@ class WaydroidSettings(Gtk.Application):
                 'text-x-script', Gtk.IconSize.BUTTON)
             script_name_label = Gtk.Label(label=os.path.basename(script))
             run_help_button = Gtk.Button().new_from_icon_name(
-                'gtk-dialog-question', Gtk.IconSize.BUTTON)
+                'help-about', Gtk.IconSize.BUTTON)
             run_help_button.connect('clicked', self.run_help, script)
             run_script_button = Gtk.Button().new_from_icon_name(
                 'media-playback-start', Gtk.IconSize.BUTTON)
