@@ -1,0 +1,8 @@
+[Desktop Entry]
+Icon=/usr/lib/waydroid/data/wd-settings-icon.png
+Type=Application
+Name=Install to Waydroid
+Exec=sudo waydroid app install %F
+MimeType=application/vnd.android.package-archive
+Terminal=true
+NoDisplay=true
