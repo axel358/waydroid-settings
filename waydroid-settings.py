@@ -329,6 +329,14 @@ class WaydroidSettings(Gtk.Application):
         if response == Gtk.ResponseType.OK:
             utils.wipe_data()
         dialog.destroy()
+        
+    def select_apk(self, button):
+        dialog = Gtk.FileChooserDialog(title = 'Select apk', parent = self.window, action = Gtk.FileChooserAction.OPEN)
+        dialog.add_buttons("_Cancel", Gtk.ResponseType.CANCEL, "_Save", Gtk.ResponseType.ACCEPT)
+        response = dialog.run()
+        if response == Gtk.ResponseType.ACCEPT:
+            utils.install_apk(dialog.get_filename())
+        dialog.destroy()
 
     def update_scripts_list(self):
         for child in self.scripts_list_box.get_children():

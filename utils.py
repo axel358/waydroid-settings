@@ -198,3 +198,6 @@ def disable_kb():
         return True
     except:
         return False
+    
+def install_apk(apk):
+    run('waydroid app install', True)
