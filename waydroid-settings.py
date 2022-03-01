@@ -259,19 +259,27 @@ class WaydroidSettings(Gtk.Application):
         pass_entry.set_visibility(False)
         pass_entry.set_margin_start(5)
         pass_entry.set_margin_end(5)
+        
+        pass_entry.connect('activate', self.check_pass, pass_entry, dialog)
                 
         dialog.get_content_area().pack_start(pass_entry, True, True, 10)
         dialog.show_all()
         response = dialog.run()
 
         if response == Gtk.ResponseType.OK:
-            if len(password := pass_entry.get_text().strip()) > 0:
-                if utils.is_correct_pass(password):
-                    dialog.destroy()
-                else:
-                    self.show_wrong_password_dialog()
-                    dialog.destroy()
-                    self.show_password_dialog()
+            self.check_pass(None, pass_entry, dialog)
+        else:
+            dialog.destroy()
+
+                    
+    def check_pass(self, widget, pass_entry, dialog):
+        if len(password := pass_entry.get_text().strip()) > 0:
+            if utils.is_correct_pass(password):
+                dialog.destroy()
+            else:
+                self.show_wrong_password_dialog()
+                dialog.destroy()
+                self.show_password_dialog()
 
     def show_wrong_password_dialog(self):
         dialog = Gtk.MessageDialog(transient_for=self.window)
