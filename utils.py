@@ -181,6 +181,25 @@ def disable_navbar():
     except:
         return False
 
+def disable_freeform_override():
+    try:
+        print('disabling multi-window override')
+        run('sed -i "/persist.waydroid.multi_windows=true/d" ' + BASE_PROP_LOC)
+        restart_session()
+        return True
+    except:
+        return False
+
+
+def enable_freeform_override():
+    try:
+        print('enabling multi-window override')
+        run('echo "persist.waydroid.multi_windows=true" >> ' + BASE_PROP_LOC)
+        restart_session()
+        return True
+    except:
+        return False
+
 
 def enable_kb():
     try:

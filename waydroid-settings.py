@@ -56,7 +56,7 @@ class WaydroidSettings(Gtk.Application):
     def load_values(self):
 
         self.refreshing = True
-        self.free_form_switch.set_active(utils.get_prop(utils.PROP_FREE_FORM) == 'true' )
+        self.free_form_switch.set_active(utils.search_base_prop('persist.waydroid.multi_windows=true'))
         self.color_invert_switch.set_active(utils.get_prop(utils.PROP_INVERT_COLORS) == 'true')
         self.suspend_switch.set_active(utils.get_prop(utils.PROP_SUSPEND_INACTIVE) == 'true')
         self.nav_btns_switch.set_active(utils.search_base_prop('qemu.hw.mainkeys=1'))
@@ -177,7 +177,10 @@ class WaydroidSettings(Gtk.Application):
 
     def toggle_free_form(self, switch, checked):
         if not self.refreshing:
-            utils.set_prop(utils.PROP_FREE_FORM, str(checked).lower())
+            if checked:
+                utils.enable_freeform_override()
+            else:
+                utils.disable_freeform_override()
 
     def toggle_suspend(self, switch, checked):
         if not self.refreshing:
