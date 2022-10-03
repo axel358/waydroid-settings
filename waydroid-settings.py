@@ -9,7 +9,7 @@ import time
 gi.require_version('Gtk', '3.0')
 gi.require_version('WebKit2', '4.0')
 gi.require_version('Vte', '2.91')
-from gi.repository import Gtk, Vte, WebKit2, GLib
+from gi.repository import Gtk, Vte, WebKit2, GLib, Gdk
 
 
 class WaydroidSettings(Gtk.Application):
@@ -45,9 +45,25 @@ class WaydroidSettings(Gtk.Application):
         self.terminal = Vte.Terminal()
         self.terminal.set_input_enabled(True)
         self.terminal.set_scroll_on_output(True)
+        bg_color = Gdk.RGBA()
+        bg_color.red = 1.0
+        bg_color.blue = 1.0
+        bg_color.green = 1.0
+        bg_color.alpha = 1.0
+        self.terminal.set_color_background(bg_color)
+        fg_color = Gdk.RGBA()
+        fg_color.red = 0.0
+        fg_color.blue = 0.0
+        fg_color.green = 0.0
+        fg_color.alpha = 1.0
+        self.terminal.set_color_foreground(fg_color)
         scroll_view.add(self.terminal)
-
-        scripts_box.pack_end(scroll_view, True, True, 10)
+        terminal_box = self.builder.get_object('terminal_box')
+        self.terminal.set_margin_bottom(12)
+        self.terminal.set_margin_top(12)
+        self.terminal.set_margin_end(12)
+        self.terminal.set_margin_start(12)
+        terminal_box.pack_end(scroll_view, True, True, 0)
 
         self.builder.connect_signals(self)
         self.show_password_dialog()
@@ -356,9 +372,8 @@ class WaydroidSettings(Gtk.Application):
         script_list = glob.glob(utils.SCRIPTS_DIR+'/**/*.sh', recursive=True) + glob.glob(utils.SCRIPTS_DIR+'/**/*.py', recursive=True)
 
         for script in script_list:
-            row = Gtk.ListBoxRow()
             script_row = Gtk.Box(
-                orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+                orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
             script_icon_image = Gtk.Image().new_from_icon_name(
                 'text-x-script', Gtk.IconSize.BUTTON)
             script_name_label = Gtk.Label(label=os.path.basename(script))
@@ -369,13 +384,15 @@ class WaydroidSettings(Gtk.Application):
                 'media-playback-start', Gtk.IconSize.BUTTON)
             run_script_button.connect('clicked', self.run_script, script)
 
-            script_row.pack_start(script_icon_image, False, False, 10)
-            script_row.pack_start(script_name_label, False, False, 5)
-            script_row.pack_end(run_help_button, False, False, 10)
-            script_row.pack_end(run_script_button, False, False, 10)
+            script_row.pack_start(script_icon_image, False, False, 0)
+            script_row.pack_start(script_name_label, False, False, 6)
+            box = Gtk.Box()
+            box.get_style_context().add_class('linked');
+            box.pack_start(run_script_button, False, False, 0)
+            box.pack_start(run_help_button, False, False, 0)
+            script_row.pack_end(box, False, False, 0)
 
-            row.add(script_row)
-            self.scripts_list_box.add(row)
+            self.scripts_list_box.add(script_row)
 
         self.scripts_list_box.show_all()
 
