@@ -67,17 +67,7 @@ class WaydroidsettingsWindow(Adw.ApplicationWindow):
         #web_view.load_uri(self.utils.DOCS_URL)
 
         #Load values
-        self.free_form_switch.set_active(
-            self.utils.search_base_prop('persist.waydroid.multi_windows=true'))
-        self.color_invert_switch.set_active(
-            self.utils.get_prop(self.utils.PROP_INVERT_COLORS) == 'true')
-        self.suspend_switch.set_active(
-            self.utils.get_prop(self.utils.PROP_SUSPEND_INACTIVE) == 'true')
-        self.nav_btns_switch.set_active(
-            self.utils.search_base_prop('qemu.hw.mainkeys=1'))
-        self.soft_kb_switch.set_active(self.utils.is_kb_disabled())
-
-        self.update_container_status()
+        self.update_status()
 
         self.free_form_switch.connect('state-set', self.toggle_free_form)
         self.color_invert_switch.connect('state-set',
@@ -142,12 +132,29 @@ class WaydroidsettingsWindow(Adw.ApplicationWindow):
         self.utils.set_prop(self.utils.PROP_INVERT_COLORS,
                             str(checked).lower())
 
-    def update_container_status(self):
+    def update_status(self):
+        self.updating = True
         if not self.utils.is_container_active():
             self.container_bar.set_revealed(True)
         else:
             self.container_bar.set_revealed(False)
-            self.session_bar.set_revealed(not self.utils.is_waydroid_running())
+            if self.utils.is_waydroid_running():
+                self.session_bar.set_revealed(False)
+                self.free_form_switch.set_active(
+                    self.utils.search_base_prop(
+                        'persist.waydroid.multi_windows=true'))
+                self.color_invert_switch.set_active(
+                    self.utils.get_prop(self.utils.PROP_INVERT_COLORS) ==
+                    'true')
+                self.suspend_switch.set_active(
+                    self.utils.get_prop(self.utils.PROP_SUSPEND_INACTIVE) ==
+                    'true')
+                self.nav_btns_switch.set_active(
+                    self.utils.search_base_prop('qemu.hw.mainkeys=1'))
+                self.soft_kb_switch.set_active(self.utils.is_kb_disabled())
+            else:
+                self.session_bar.set_revealed(True)
+        self.updating = False
 
     @Gtk.Template.Callback()
     def show_ff_dialog(self, button):
@@ -275,7 +282,7 @@ class WaydroidsettingsWindow(Adw.ApplicationWindow):
             counter = counter - 1
             if self.utils.is_container_active():
                 counter = 0
-                self.update_container_status()
+                self.update_status()
 
     @Gtk.Template.Callback()
     def on_click_start_session(self, button):
@@ -286,22 +293,22 @@ class WaydroidsettingsWindow(Adw.ApplicationWindow):
             counter = counter - 1
             if self.utils.is_waydroid_running():
                 counter = 0
-                self.update_container_status()
+                self.update_status()
 
     @Gtk.Template.Callback()
     def on_click_restart_session(self, button):
         self.utils.restart_session()
-        self.update_container_status()
+        self.update_status()
 
     @Gtk.Template.Callback()
     def on_click_stop_session(self, button):
         self.utils.stop_session()
-        self.update_container_status()
+        self.update_status()
 
     @Gtk.Template.Callback()
     def on_click_freeze_container(self, button):
         self.utils.freeze_container()
-        self.update_container_status()
+        self.update_status()
 
     @Gtk.Template.Callback()
     def on_click_unfreeze_container(self, button):
