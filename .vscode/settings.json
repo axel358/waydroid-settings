@@ -1,0 +1,4 @@
+{
+    "mesonbuild.configureOnOpen": true,
+    "python.formatting.provider": "yapf"
+}

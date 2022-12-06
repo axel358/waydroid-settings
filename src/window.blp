@@ -1,0 +1,375 @@
+using Gtk 4.0;
+using Adw 1;
+
+template WaydroidsettingsWindow : Adw.ApplicationWindow {
+  modal: true;
+  width-request: 360;
+  height-request: 500;
+  title: _("Waydroid Settings");
+
+  Box {
+    orientation: vertical;
+
+    Adw.HeaderBar {
+      centering-policy: strict;
+      title-widget:
+      Adw.ViewSwitcherTitle switcher_title {
+        stack: stack;
+        title: bind WaydroidsettingsWindow.title;
+      };
+
+      Button {
+        icon-name: "info-symbolic";
+        clicked => show_about();
+      }
+    }
+
+    Adw.ViewStack stack {
+      vexpand: true;
+
+      Adw.ViewStackPage  {
+        name: "settings_page";
+        title: _("_Settings");
+        icon-name: "settings-symbolic";
+        use-underline: true;
+        child:
+        Box settings_page{
+          orientation: vertical;
+
+          InfoBar container_bar {
+            revealed: false;
+            message-type: warning;
+
+            Label {
+              label: "Waydroid container not running";
+            }
+
+            [action]
+            Button {
+              label: "Start";
+              clicked => on_click_start_container();
+            }
+          }
+
+          InfoBar session_bar {
+            revealed: false;
+            message-type: warning;
+
+            Label {
+              label: "Waydroid session not running";
+            }
+
+            [action]
+            Button {
+              label: "Start";
+              clicked => on_click_start_session();
+            }
+          }
+
+          ScrolledWindow {
+            hscrollbar-policy: never;
+            vexpand: true;
+
+            Viewport {
+
+              Adw.Clamp {
+                margin-top: 12;
+                margin-end: 12;
+                margin-start: 12;
+                margin-bottom: 12;
+                maximum-size: 550;
+                tightening-threshold: 580;
+                child:
+
+                Box {
+                  orientation: vertical;
+                  spacing: 12;
+
+                  Adw.PreferencesGroup {
+                    title: "General";
+
+                    Adw.ActionRow {
+                      subtitle: _("Only works on GNOME/Mutter");
+                      title: _("Enable multi-window mode");
+
+                      Switch free_form_switch {
+                        valign: center;
+                      }
+                    }
+
+                    Adw.ActionRow {
+                      title: _("Invert colors");
+
+                      Switch color_invert_switch {
+                        valign: center;
+                      }
+                    }
+
+                    Adw.ActionRow {
+                      title: _("Suspend the container on inactivity");
+
+                      Switch suspend_switch {
+                        valign: center;
+                      }
+                    }
+
+                    Adw.ActionRow {
+                      title: _("Apps to exclude from free form");
+
+                      Button {
+                        label: _("Change");
+                        valign: center;
+                        clicked => show_ff_dialog();
+                      }
+                    }
+
+                    Adw.ActionRow {
+                      title: _("Apps to force on the Wayland stack");
+
+                      Button {
+                        label: _("Change");
+                        valign: center;
+                        clicked => show_force_w_dialog();
+                      }
+                    }
+                  }
+                  Adw.PreferencesGroup {
+                    title: "Window";
+
+                    Adw.ActionRow {
+                      title: _("Window width");
+
+                      SpinButton {
+                        valign: center;
+                      }
+                    }
+
+                    Adw.ActionRow {
+                      title: _("Window height");
+
+                      SpinButton {
+                        valign: center;
+                      }
+                    }
+
+                    Adw.ActionRow {
+                      title: _("Window padding height");
+
+                      SpinButton {
+                        valign: center;
+                      }
+                    }
+
+                    Adw.ActionRow {
+                      title: _("Window padding width");
+
+                      SpinButton {
+                        valign: center;
+                      }
+                    }
+                  }
+                };
+              }
+            }
+          }
+        };
+      }
+
+      Adw.ViewStackPage {
+        name: "scripts_page";
+        title: _("_Scripts");
+        icon-name: "scripts-symbolic";
+        use-underline: true;
+        child:
+
+        Box {
+          orientation: vertical;
+
+          ScrolledWindow {
+            hscrollbar-policy: never;
+            vexpand: true;
+
+            Viewport {
+
+              ListBox scripts_list {
+                margin-top: 12;
+                margin-start: 12;
+                margin-end: 12;
+                margin-bottom: 12;
+                valign: start;
+                styles ["boxed-list"]
+              }
+            }
+          }
+          ScrolledWindow {
+            margin-start: 12;
+            margin-end: 12;
+            margin-bottom: 12;
+            margin-top: 12;
+            height-request: 150;
+            styles ["frame"]
+
+            Viewport terminal_box {
+              margin-start: 6;
+              margin-end: 6;
+              margin-bottom: 6;
+              margin-top: 6;
+            }
+          }
+        };
+      }
+
+      Adw.ViewStackPage {
+        name: "tools_page";
+        title: _("_Tools");
+        icon-name: "tools-symbolic";
+        use-underline: true;
+        child:
+        ScrolledWindow {
+          hscrollbar-policy: never;
+
+          Viewport {
+
+            Adw.Clamp {
+              margin-top: 12;
+              margin-end: 12;
+              margin-start: 12;
+              margin-bottom: 12;
+              maximum-size: 550;
+              tightening-threshold: 580;
+              child:
+
+              Box {
+                orientation: vertical;
+                spacing: 12;
+
+                Adw.PreferencesGroup {
+                  title: "Android";
+
+                  Adw.ActionRow {
+                    title: _("Increase system image size");
+
+                    Button {
+                      label: _("Change");
+                      valign: center;
+                      clicked => show_resize_dialog();
+                    }
+                  }
+
+                  Adw.ActionRow {
+                    title: _("Wipe all data(factory reset)");
+
+                    Button {
+                      label: _("Wipe");
+                      valign: center;
+                      clicked => show_wipe_dialog();
+                      styles ["destructive-action"]
+                    }
+                  }
+
+                  Adw.ActionRow {
+                    title: _("Install local apk");
+
+                    Button {
+                      label: _("Select");
+                      valign: center;
+                      clicked => select_apk();
+                    }
+                  }
+
+                  Adw.ActionRow {
+                    title: _("Flash zip file to system image");
+
+                    Button {
+                      label: _("Select");
+                      valign: center;
+                    }
+                  }
+
+                  Adw.ActionRow {
+                    title: _("Disable soft keyboard");
+
+                    Switch soft_kb_switch{
+                      valign: center;
+                    }
+                  }
+
+                  Adw.ActionRow {
+                    title: _("Disable Android navigation buttons");
+
+                    Switch nav_btns_switch {
+                      valign: center;
+                    }
+                  }
+                }
+                Adw.PreferencesGroup {
+                  title: "Waydroid";
+                  Adw.ActionRow {
+                    title: _("Container");
+
+                    Button {
+                      label: _("Restart");
+                      valign: center;
+                      clicked => on_click_restart_session();
+                    }
+
+                    Button {
+                      label: _("Freeze");
+                      valign: center;
+                      clicked => on_click_freeze_container();
+                    }
+
+                    Button {
+                      label: _("Unfreeze");
+                      valign: center;
+                      clicked => on_click_unfreeze_container();
+                    }
+
+                  }
+
+                  Adw.ActionRow {
+                    title: _("Session");
+
+                    Button {
+                      label: _("Restart");
+                      valign: center;
+                      clicked => on_click_restart_session();
+                    }
+
+                    Button {
+                      label: _("Stop");
+                      valign: center;
+                      clicked => on_click_stop_session();
+                    }
+
+                  }
+                }
+              };
+            }
+          }
+        };
+      }
+
+      Adw.ViewStackPage {
+        name: "docs_page";
+        title: _("Docs");
+        icon-name: "docs-symbolic";
+        use-underline: true;
+        child:
+        ScrolledWindow {
+          margin-start: 12;
+          margin-end: 12;
+          margin-bottom: 12;
+          margin-top: 12;
+
+          Viewport web_box {
+          }
+        };
+      }
+    }
+    Adw.ViewSwitcherBar switcher_bar {
+      stack: stack;
+      reveal: bind switcher_title.title-visible;
+    }
+  }
+}

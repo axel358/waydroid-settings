@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/cu/axel/waydroidsettings">
+    <file>window.ui</file>
+    <file>gtk/help-overlay.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks" alias="icons/scalable/actions/docs-symbolic.svg" >../data/icons/docs-symbolic.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks" alias="icons/scalable/actions/tools-symbolic.svg" >../data/icons/tools-symbolic.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks" alias="icons/scalable/actions/scripts-symbolic.svg" >../data/icons/scripts-symbolic.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks" alias="icons/scalable/actions/settings-symbolic.svg" >../data/icons/settings-symbolic.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks" alias="icons/scalable/actions/run-symbolic.svg" >../data/icons/run-symbolic.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks" alias="icons/scalable/actions/info-symbolic.svg" >../data/icons/info-symbolic.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks" alias="icons/scalable/actions/scripts-python-symbolic.svg" >../data/icons/scripts-python-symbolic.svg</file>
+  </gresource>
+</gresources>

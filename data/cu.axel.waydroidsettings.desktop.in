@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=waydroidsettings
+Exec=waydroidsettings
+Icon=cu.axel.waydroidsettings
+Terminal=false
+Type=Application
+Categories=GTK;
+StartupNotify=true

@@ -1,0 +1,7 @@
+data/cu.axel.waydroidsettings.desktop.in
+data/cu.axel.waydroidsettings.appdata.xml.in
+data/cu.axel.waydroidsettings.gschema.xml
+src/window.ui
+src/main.py
+src/window.py
+
