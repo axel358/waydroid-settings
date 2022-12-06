@@ -1,9 +1,0 @@
-[submodule "scripts/quackdoc_scripts"]
-	path = scripts/quackdoc_scripts
-	url = https://github.com/Quackdoc/waydroid-scripts
-[submodule "scripts/waydroid-10-11-switch-script"]
-	path = scripts/waydroid-10-11-switch-script
-	url = https://github.com/electrikjesus/waydroid-10-11-switch-script
-[submodule "scripts/wd-scripts"]
-	path = scripts/wd-scripts
-	url = https://github.com/electrikjesus/wd-scripts.git
