@@ -64,7 +64,7 @@ class WaydroidsettingsWindow(Adw.ApplicationWindow):
         self.utils = Utils()
         web_view = WebKit2.WebView()
         self.web_box.set_child(web_view)
-        #web_view.load_uri(self.utils.DOCS_URL)
+        web_view.load_uri('https://google.com')
 
         #Load values
         self.update_status()
