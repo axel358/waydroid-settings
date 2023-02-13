@@ -44,7 +44,10 @@ fi
 
 sudo cp /usr/share/waydroid-settings/waydroid-settings.sh /usr/bin/
 sudo chmod +x /usr/bin/waydroid-settings.sh
+sudo cp /usr/share/waydroid-settings/waydroid-helper /usr/bin/
+sudo chmod +x /usr/bin/waydroid-helper
 sudo cp /usr/share/waydroid-settings/icon2.png /usr/lib/waydroid/data/wd-settings-icon.png
 sudo cp /usr/share/waydroid-settings/*.desktop /usr/share/applications/
+sudo cp /usr/share/waydroid-settings/org.freedesktop.policykit.waydroid-helper.policy /usr/share/polkit-1/actions/
 
 echo "All set. Thanks for installing."
