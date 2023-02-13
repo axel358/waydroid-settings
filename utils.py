@@ -49,6 +49,16 @@ def run(command, as_root=False):
         return True
     except (subprocess.CalledProcessError, FileNotFoundError):
         return False
+        
+def run2(command, as_root=False):
+    try:
+        if as_root:
+            subprocess.run('pkexec waydroid-helper ' + '"' + command + '"', shell=True)
+        else:
+            subprocess.run(command, shell=True)
+        return True
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return False
 
 
 def get_prop(name):
@@ -101,7 +111,7 @@ def is_container_active():
 
 
 def start_container_service():
-    return run('systemctl restart waydroid-container.service', True)
+    return run2('systemctl restart waydroid-container.service', True)
 
 
 def freeze_container():
