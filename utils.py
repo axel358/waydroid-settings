@@ -53,7 +53,7 @@ def run(command, as_root=False):
 def run2(command, as_root=False):
     try:
         if as_root:
-            subprocess.run('pkexec waydroid-helper ' + '"' + command + '"', shell=True)
+            subprocess.run('pkexec /usr/bin/waydroid-helper ' + '"' + command + '"', shell=True)
         else:
             subprocess.run(command, shell=True)
         return True
@@ -70,7 +70,7 @@ def get_prop(name):
 
 def is_kb_disabled():
     try:
-        kb_val = subprocess.check_output('echo "' + ROOT_PW + '" | echo "pm list packages -d 2>/dev/null | grep com.android.inputmethod.latin | wc -l" | sudo -S waydroid shell', shell=True)
+        kb_val = subprocess.check_output('pkexec /usr/bin/waydroid-helper "' + '"" | echo "pm list packages -d 2>/dev/null | grep com.android.inputmethod.latin | wc -l" | sudo -S waydroid shell "', shell=True)
         print("kb_val: " + str(kb_val))
         return '1' in str(kb_val)
     except subprocess.CalledProcessError:
@@ -86,11 +86,31 @@ def is_correct_pass(password):
 
 
 def set_prop(name, value):
-    return run('waydroid prop set ' + name + ' ' + value, True)
+    return run2('waydroid prop set ' + name + ' ' + value, True)
 
 
 def run_shell_command(command):
     return subprocess.run('echo "' + ROOT_PW + '" | echo "' + command + '" | sudo -S waydroid shell', shell=True, text=True)
+
+def run2_shell_command(command, as_root=False):
+    try:
+        if as_root:
+            subprocess.run('pkexec /usr/bin/waydroid-helper ' + '" | echo "' + command + '" | sudo -S waydroid shell"', shell=True, text=True)
+        else:
+            subprocess.run(command, shell=True)
+        return True
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return False
+
+def run2_echo_command_to_wd_base(command):
+    try:
+        print('Adding ' + command + ' to waydroid_base.prop')
+        add_it = ('echo ' + command + ' | pkexec tee -a ' + BASE_PROP_LOC)
+        subprocess.run(add_it, shell=True, text=True)
+        print(add_it)
+        return True
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return False
 
 
 def is_waydroid_running():
@@ -115,19 +135,19 @@ def start_container_service():
 
 
 def freeze_container():
-    return run('waydroid container freeze', True)
+    return run2('waydroid container freeze', True)
 
 
 def unfreeze_container():
-    return run('waydroid container unfreeze &', True)
+    return run2('waydroid container unfreeze &', True)
 
 
 def start_session():
-    return run('waydroid session start &')
+    return run2('waydroid session start &')
 
 
 def stop_session():
-    return run('waydroid session stop &')
+    return run2('waydroid session stop &')
 
 
 def restart_session():
@@ -145,17 +165,17 @@ def get_image_size():
 
 
 def resize_image(new_size):
-    run('systemctl stop waydroid-container.service', True)
-    run('resize2fs ' + SYSTEM_IMAGE + ' ' + new_size + 'G', True)
-    run('e2fsck -f ' + SYSTEM_IMAGE, True)
+    run2('systemctl stop waydroid-container.service', True)
+    run2('resize2fs ' + SYSTEM_IMAGE + ' ' + new_size + 'G', True)
+    run2('e2fsck -f ' + SYSTEM_IMAGE, True)
     start_container_service()
     start_session()
 
 
 def wipe_data():
-    run('systemctl stop waydroid-container.service', True)
-    run('rm -rf ' + str(Path.home()) + '/.local/share/waydroid/data', True)
-    run('waydroid init -f', True)
+    run2('systemctl stop waydroid-container.service', True)
+    run2('rm -rf ' + str(Path.home()) + '/.local/share/waydroid/data', True)
+    run2('waydroid init -f', True)
     start_container_service()
     start_session()
 
@@ -175,7 +195,7 @@ def search_base_prop(prop):
 def enable_navbar():
     try:
         print('enabling navbar')
-        run('sed -i "/qemu.hw.mainkeys=1/d" ' + BASE_PROP_LOC)
+        run2('sed -i "/qemu.hw.mainkeys=1/d" ' + BASE_PROP_LOC, True)
         restart_session()
         return True
     except:
@@ -185,7 +205,8 @@ def enable_navbar():
 def disable_navbar():
     try:
         print('disabling navbar')
-        run('echo "qemu.hw.mainkeys=1" >> ' + BASE_PROP_LOC)
+        run2_echo_command_to_wd_base('qemu.hw.mainkeys=1')
+        print('Restarting container service and session')
         restart_session()
         return True
     except:
@@ -194,7 +215,7 @@ def disable_navbar():
 def disable_freeform_override():
     try:
         print('disabling multi-window override')
-        run('sed -i "/persist.waydroid.multi_windows=true/d" ' + BASE_PROP_LOC)
+        run2('sed -i "/persist.waydroid.multi_windows=true/d" ' + BASE_PROP_LOC, True)
         restart_session()
         return True
     except:
@@ -204,7 +225,7 @@ def disable_freeform_override():
 def enable_freeform_override():
     try:
         print('enabling multi-window override')
-        run('echo "persist.waydroid.multi_windows=true" >> ' + BASE_PROP_LOC)
+        run2_echo_command_to_wd_base('persist.waydroid.multi_windows=true')
         restart_session()
         return True
     except:
@@ -214,7 +235,7 @@ def enable_freeform_override():
 def enable_kb():
     try:
         print('enabling keyboard')
-        run_shell_command("pm enable com.android.inputmethod.latin")
+        run2_shell_command("pm enable com.android.inputmethod.latin")
         return True
     except:
         return False
@@ -223,10 +244,10 @@ def enable_kb():
 def disable_kb():
     try:
         print('disabling keyboard')
-        run_shell_command("pm disable com.android.inputmethod.latin")
+        run2_shell_command("pm disable com.android.inputmethod.latin")
         return True
     except:
         return False
     
 def install_apk(apk):
-    run('waydroid app install ' + apk, True)
+    run2('waydroid app install ' + apk, True)

@@ -66,7 +66,8 @@ class WaydroidSettings(Gtk.Application):
         terminal_box.pack_end(scroll_view, True, True, 0)
 
         self.builder.connect_signals(self)
-        self.show_password_dialog()
+        # Disable our password dialog for pkexec
+        # self.show_password_dialog()
         self.load_values()
 
     def load_values(self):
