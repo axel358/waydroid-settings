@@ -138,7 +138,7 @@ def restart_session():
 
 def get_image_size():
     try:
-        return str('{:.3f}'.format(os.path.getsize(SYSTEM_IMAGE) / (1024 * 1024 * 1024))) + ' GB'
+        return str('{:.3f}'.format(os.path.getsize(SYSTEM_IMAGE) / 1024 ** 3)) + ' GB'
     except FileNotFoundError:
         return 0
 
