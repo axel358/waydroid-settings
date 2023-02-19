@@ -39,17 +39,7 @@ if os.path.isdir(scripts_dir1):
 elif os.path.isdir(scripts_dir2):
     SCRIPTS_DIR = scripts_dir2
 
-
-def run(command, as_root=False):
-    try:
-        if as_root:
-            subprocess.run('echo "' + ROOT_PW + '" | sudo -S ' + command, shell=True)
-        else:
-            subprocess.run(command, shell=True)
-        return True
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        return False
-        
+ 
 def run2(command, as_root=False):
     try:
         if as_root:
@@ -77,20 +67,9 @@ def is_kb_disabled():
         return False
 
 
-def is_correct_pass(password):
-    try:
-        subprocess.check_output('echo "' + password + '" | sudo -S echo 1', shell=True)
-        return True
-    except subprocess.CalledProcessError:
-        return False
-
-
 def set_prop(name, value):
     return run2('waydroid prop set ' + name + ' ' + value, True)
 
-
-def run_shell_command(command):
-    return subprocess.run('echo "' + ROOT_PW + '" | echo "' + command + '" | sudo -S waydroid shell', shell=True, text=True)
 
 def run2_shell_command(command, as_root=False):
     try:
