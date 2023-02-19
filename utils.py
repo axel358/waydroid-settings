@@ -60,7 +60,7 @@ def get_prop(name):
 
 def is_kb_disabled():
     try:
-        kb_val = subprocess.check_output('pkexec /usr/bin/waydroid-helper "' + '"" | echo "pm list packages -d 2>/dev/null | grep com.android.inputmethod.latin | wc -l" | sudo -S waydroid shell "', shell=True)
+        kb_val = subprocess.check_output(['pkexec', 'waydroid-helper', 'kb_status'])
         print("kb_val: " + str(kb_val))
         return '1' in str(kb_val)
     except subprocess.CalledProcessError:

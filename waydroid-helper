@@ -9,10 +9,10 @@ elif [ "$cmd" = "disable_ff" ]; then
   sed -i "/persist.waydroid.multi_windows=true/d" "$BASE_PROP_LOC"
 elif [ "$cmd" = "disable_nav" ]; then
   echo qemu.hw.mainkeys=1 >> "$BASE_PROP_LOC"
+elif [[ "$cmd" = "kb_status" ]] || [[ "$cmd" = "b_statu" ]]; then
+  echo "pm list packages -d 2>/dev/null | grep com.android.inputmethod.latin | wc -l" | waydroid shell
 elif [ "$cmd" = "enable_nav" ]; then
   sed -i "/qemu.hw.mainkeys=1/d" "$BASE_PROP_LOC"
-elif [ "$cmd" = "kb_status" ]; then
-  echo 1
 else
   $cmd
 fi
