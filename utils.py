@@ -214,7 +214,7 @@ def enable_freeform_override():
 def enable_kb():
     try:
         print('enabling keyboard')
-        run_shell_command("pm enable com.android.inputmethod.latin")
+        run('enable_kb', True)
         return True
     except:
         return False
@@ -223,7 +223,7 @@ def enable_kb():
 def disable_kb():
     try:
         print('disabling keyboard')
-        run_shell_command("pm disable com.android.inputmethod.latin")
+        run('disable_kb', True)
         return True
     except:
         return False

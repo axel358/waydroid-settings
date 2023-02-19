@@ -12,6 +12,10 @@ elif [ "$1" = "kb_status" ]; then
   echo "pm list packages -d 2>/dev/null | grep com.android.inputmethod.latin | wc -l" | waydroid shell
 elif [ "$1" = "enable_nav" ]; then
   sed -i "/qemu.hw.mainkeys=1/d" "$BASE_PROP_LOC"
+elif [ "$1" = "enable_kb" ]; then
+  echo "pm enable com.android.inputmethod.latin" | waydroid shell
+elif [ "$1" = "disable_kb" ]; then
+  echo "pm disable com.android.inputmethod.latin" | waydroid shell
 else
   $1
 fi
