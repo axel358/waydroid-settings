@@ -14,8 +14,7 @@ PROP_ACTIVE_APPS = 'waydroid.active_apps'
 DOCS_URL = 'https://docs.waydro.id/'
 HOME_URL = 'https://waydro.id/'
 SYSTEM_IMAGE = ''
-#BASE_PROP_LOC = '/var/lib/waydroid/waydroid_base.prop'
-BASE_PROP_LOC = '/home/axel/lala.txt'
+BASE_PROP_LOC = '/var/lib/waydroid/waydroid_base.prop'
 ROOT_PW = ''
 
 # System.img paths
