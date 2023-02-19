@@ -11,9 +11,6 @@ elif [ "$cmd" = "disable_nav" ]; then
   echo qemu.hw.mainkeys=1 >> "$BASE_PROP_LOC"
 elif [ "$cmd" = "enable_nav" ]; then
   sed -i "/qemu.hw.mainkeys=1/d" "$BASE_PROP_LOC"
-elif [ "$cmd" = "restart_session" ]; then
-  sudo systemctl restart waydroid-container.service
-  waydroid session start
 elif [ "$cmd" = "kb_status" ]; then
   echo 1
 else
