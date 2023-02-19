@@ -14,7 +14,8 @@ PROP_ACTIVE_APPS = 'waydroid.active_apps'
 DOCS_URL = 'https://docs.waydro.id/'
 HOME_URL = 'https://waydro.id/'
 SYSTEM_IMAGE = ''
-BASE_PROP_LOC = '/var/lib/waydroid/waydroid_base.prop'
+#BASE_PROP_LOC = '/var/lib/waydroid/waydroid_base.prop'
+BASE_PROP_LOC = '/home/axel/lala.txt'
 ROOT_PW = ''
 
 # System.img paths
@@ -43,7 +44,7 @@ elif os.path.isdir(scripts_dir2):
 def run2(command, as_root=False):
     try:
         if as_root:
-            subprocess.run('pkexec /usr/bin/waydroid-helper ' + '"' + command + '"', shell=True)
+            subprocess.run(['pkexec', 'waydroid-helper', '"' + command + '"'])
         else:
             subprocess.run(command, shell=True)
         return True
@@ -74,7 +75,7 @@ def set_prop(name, value):
 def run2_shell_command(command, as_root=False):
     try:
         if as_root:
-            subprocess.run('pkexec /usr/bin/waydroid-helper ' + '" | echo "' + command + '" | sudo -S waydroid shell"', shell=True, text=True)
+            subprocess.run('pkexec /usr/bin/waydroid-helper ' + '" | echo "' + command + '" | sudo -S waydroid shell"', text=True)
         else:
             subprocess.run(command, shell=True)
         return True
@@ -85,7 +86,7 @@ def run2_echo_command_to_wd_base(command):
     try:
         print('Adding ' + command + ' to waydroid_base.prop')
         add_it = ('echo ' + command + ' | pkexec tee -a ' + BASE_PROP_LOC)
-        subprocess.run(add_it, shell=True, text=True)
+        subprocess.run(add_it, text=True, shell=True)
         print(add_it)
         return True
     except (subprocess.CalledProcessError, FileNotFoundError):
@@ -174,7 +175,7 @@ def search_base_prop(prop):
 def enable_navbar():
     try:
         print('enabling navbar')
-        run2('sed -i "/qemu.hw.mainkeys=1/d" ' + BASE_PROP_LOC, True)
+        run2('enable_nav', True)
         restart_session()
         return True
     except:
@@ -184,7 +185,7 @@ def enable_navbar():
 def disable_navbar():
     try:
         print('disabling navbar')
-        run2_echo_command_to_wd_base('qemu.hw.mainkeys=1')
+        run2('disable_nav', True)
         print('Restarting container service and session')
         restart_session()
         return True
@@ -194,7 +195,7 @@ def disable_navbar():
 def disable_freeform_override():
     try:
         print('disabling multi-window override')
-        run2('sed -i "/persist.waydroid.multi_windows=true/d" ' + BASE_PROP_LOC, True)
+        run2('disable_ff', True)
         restart_session()
         return True
     except:
@@ -204,7 +205,7 @@ def disable_freeform_override():
 def enable_freeform_override():
     try:
         print('enabling multi-window override')
-        run2_echo_command_to_wd_base('persist.waydroid.multi_windows=true')
+        run2('enable_ff', True)
         restart_session()
         return True
     except:
