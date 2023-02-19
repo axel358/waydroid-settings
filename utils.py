@@ -43,7 +43,7 @@ elif os.path.isdir(scripts_dir2):
 def run2(command, as_root=False):
     try:
         if as_root:
-            subprocess.run(['pkexec', 'waydroid-helper', '"' + command + '"'])
+            subprocess.run(['pkexec', '/usr/bin/waydroid-helper', '"' + command + '"'])
         else:
             subprocess.run(command, shell=True)
         return True
