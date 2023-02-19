@@ -40,7 +40,7 @@ elif os.path.isdir(scripts_dir2):
     SCRIPTS_DIR = scripts_dir2
 
  
-def run2(command, as_root=False):
+def run(command, as_root=False):
     try:
         if as_root:
             subprocess.run(['pkexec', '/usr/bin/waydroid-helper', '"' + command + '"'])
@@ -68,10 +68,10 @@ def is_kb_disabled():
 
 
 def set_prop(name, value):
-    return run2('waydroid prop set ' + name + ' ' + value, True)
+    return run('waydroid prop set ' + name + ' ' + value, True)
 
 
-def run2_shell_command(command, as_root=False):
+def run_shell_command(command, as_root=False):
     try:
         if as_root:
             subprocess.run('pkexec /usr/bin/waydroid-helper ' + '" | echo "' + command + '" | sudo -S waydroid shell"', text=True)
@@ -81,7 +81,7 @@ def run2_shell_command(command, as_root=False):
     except (subprocess.CalledProcessError, FileNotFoundError):
         return False
 
-def run2_echo_command_to_wd_base(command):
+def echo_command_to_wd_base(command):
     try:
         print('Adding ' + command + ' to waydroid_base.prop')
         add_it = ('echo ' + command + ' | pkexec tee -a ' + BASE_PROP_LOC)
@@ -110,23 +110,23 @@ def is_container_active():
 
 
 def start_container_service():
-    return run2('systemctl restart waydroid-container.service', True)
+    return run('systemctl restart waydroid-container.service', True)
 
 
 def freeze_container():
-    return run2('waydroid container freeze', True)
+    return run('waydroid container freeze', True)
 
 
 def unfreeze_container():
-    return run2('waydroid container unfreeze &', True)
+    return run('waydroid container unfreeze &', True)
 
 
 def start_session():
-    return run2('waydroid session start &')
+    return run('waydroid session start &')
 
 
 def stop_session():
-    return run2('waydroid session stop &')
+    return run('waydroid session stop &')
 
 
 def restart_session():
@@ -144,17 +144,17 @@ def get_image_size():
 
 
 def resize_image(new_size):
-    run2('systemctl stop waydroid-container.service', True)
-    run2('resize2fs ' + SYSTEM_IMAGE + ' ' + new_size + 'G', True)
-    run2('e2fsck -f ' + SYSTEM_IMAGE, True)
+    run('systemctl stop waydroid-container.service', True)
+    run('resize2fs ' + SYSTEM_IMAGE + ' ' + new_size + 'G', True)
+    run('e2fsck -f ' + SYSTEM_IMAGE, True)
     start_container_service()
     start_session()
 
 
 def wipe_data():
-    run2('systemctl stop waydroid-container.service', True)
-    run2('rm -rf ' + str(Path.home()) + '/.local/share/waydroid/data', True)
-    run2('waydroid init -f', True)
+    run('systemctl stop waydroid-container.service', True)
+    run('rm -rf ' + str(Path.home()) + '/.local/share/waydroid/data', True)
+    run('waydroid init -f', True)
     start_container_service()
     start_session()
 
@@ -174,7 +174,7 @@ def search_base_prop(prop):
 def enable_navbar():
     try:
         print('enabling navbar')
-        run2('enable_nav', True)
+        run('enable_nav', True)
         restart_session()
         return True
     except:
@@ -184,7 +184,7 @@ def enable_navbar():
 def disable_navbar():
     try:
         print('disabling navbar')
-        run2('disable_nav', True)
+        run('disable_nav', True)
         print('Restarting container service and session')
         restart_session()
         return True
@@ -194,7 +194,7 @@ def disable_navbar():
 def disable_freeform_override():
     try:
         print('disabling multi-window override')
-        run2('disable_ff', True)
+        run('disable_ff', True)
         restart_session()
         return True
     except:
@@ -204,7 +204,7 @@ def disable_freeform_override():
 def enable_freeform_override():
     try:
         print('enabling multi-window override')
-        run2('enable_ff', True)
+        run('enable_ff', True)
         restart_session()
         return True
     except:
@@ -214,7 +214,7 @@ def enable_freeform_override():
 def enable_kb():
     try:
         print('enabling keyboard')
-        run2_shell_command("pm enable com.android.inputmethod.latin")
+        run_shell_command("pm enable com.android.inputmethod.latin")
         return True
     except:
         return False
@@ -223,10 +223,10 @@ def enable_kb():
 def disable_kb():
     try:
         print('disabling keyboard')
-        run2_shell_command("pm disable com.android.inputmethod.latin")
+        run_shell_command("pm disable com.android.inputmethod.latin")
         return True
     except:
         return False
     
 def install_apk(apk):
-    run2('waydroid app install ' + apk, True)
+    run('waydroid app install ' + apk, True)
