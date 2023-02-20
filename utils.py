@@ -229,4 +229,7 @@ def disable_kb():
         return False
     
 def install_apk(apk):
-    run('waydroid app install ' + apk, True)
+    try:
+        run('waydroid app install ' + apk)
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return False
