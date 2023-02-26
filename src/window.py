@@ -18,13 +18,13 @@
 import gi
 import os
 import glob
-from .utils import Utils
+import waydroidsettings.utils as utils
 import time
 
 gi.require_version('Vte', '3.91')
 gi.require_version('Adw', '1')
-gi.require_version('WebKit2', '5.0')
-from gi.repository import Gtk, Gdk, GLib, Vte, Adw, WebKit2
+gi.require_version('WebKit', '6.0')
+from gi.repository import Gtk, Gdk, GLib, Vte, Adw, WebKit
 
 
 @Gtk.Template(resource_path='/cu/axel/waydroidsettings/window.ui')
@@ -61,10 +61,9 @@ class WaydroidsettingsWindow(Adw.ApplicationWindow):
         self.terminal.set_color_foreground(fg_color)
         self.terminal.set_input_enabled(True)
         self.terminal.set_scroll_on_output(True)
-        self.utils = Utils()
-        web_view = WebKit2.WebView()
+        web_view = WebKit.WebView()
         self.web_box.set_child(web_view)
-        web_view.load_uri('https://google.com')
+        # web_view.load_uri('https://google.com')
 
         #Load values
         self.update_status()
@@ -80,8 +79,8 @@ class WaydroidsettingsWindow(Adw.ApplicationWindow):
 
     def update_scripts_list(self):
         scripts = glob.glob(
-            self.utils.SCRIPTS_DIR + '/**/*.sh', recursive=True) + glob.glob(
-                self.utils.SCRIPTS_DIR + '/**/*.py', recursive=True)
+            utils.SCRIPTS_DIR + '/**/*.sh', recursive=True) + glob.glob(
+                utils.SCRIPTS_DIR + '/**/*.py', recursive=True)
 
         for script in scripts:
             row = Adw.ActionRow()
@@ -108,50 +107,50 @@ class WaydroidsettingsWindow(Adw.ApplicationWindow):
 
     def toggle_free_form(self, switch, checked):
         if checked:
-            self.utils.enable_freeform_override()
+            utils.enable_freeform_override()
         else:
-            self.utils.disable_freeform_override()
+            utils.disable_freeform_override()
 
     def toggle_suspend(self, switch, checked):
-        self.utils.set_prop(self.utils.PROP_SUSPEND_INACTIVE,
+        utils.set_prop(utils.PROP_SUSPEND_INACTIVE,
                             str(checked).lower())
 
     def toggle_navbar(self, switch, checked):
         if checked == True:
-            self.utils.disable_navbar()
+            utils.disable_navbar()
         else:
-            self.utils.enable_navbar()
+            utils.enable_navbar()
 
     def toggle_keyboard(self, switch, checked):
         if checked:
-            self.utils.disable_kb()
+            utils.disable_kb()
         else:
-            self.utils.enable_kb()
+            utils.enable_kb()
 
     def toggle_color_inversion(self, switch, checked):
-        self.utils.set_prop(self.utils.PROP_INVERT_COLORS,
+        utils.set_prop(utils.PROP_INVERT_COLORS,
                             str(checked).lower())
 
     def update_status(self):
         self.updating = True
-        if not self.utils.is_container_active():
+        if not utils.is_container_active():
             self.container_bar.set_revealed(True)
         else:
             self.container_bar.set_revealed(False)
-            if self.utils.is_waydroid_running():
+            if utils.is_waydroid_running():
                 self.session_bar.set_revealed(False)
                 self.free_form_switch.set_active(
-                    self.utils.search_base_prop(
+                    utils.search_base_prop(
                         'persist.waydroid.multi_windows=true'))
                 self.color_invert_switch.set_active(
-                    self.utils.get_prop(self.utils.PROP_INVERT_COLORS) ==
+                    utils.get_prop(utils.PROP_INVERT_COLORS) ==
                     'true')
                 self.suspend_switch.set_active(
-                    self.utils.get_prop(self.utils.PROP_SUSPEND_INACTIVE) ==
+                    utils.get_prop(utils.PROP_SUSPEND_INACTIVE) ==
                     'true')
                 self.nav_btns_switch.set_active(
-                    self.utils.search_base_prop('qemu.hw.mainkeys=1'))
-                self.soft_kb_switch.set_active(self.utils.is_kb_disabled())
+                    utils.search_base_prop('qemu.hw.mainkeys=1'))
+                self.soft_kb_switch.set_active(utils.is_kb_disabled())
             else:
                 self.session_bar.set_revealed(True)
         self.updating = False
@@ -163,8 +162,8 @@ class WaydroidsettingsWindow(Adw.ApplicationWindow):
         apps_entry = Gtk.Entry()
         dialog.set_extra_child(apps_entry)
         dialog.connect('response', self.on_ff_dialog_response)
-        current_app_list = self.utils.get_prop(
-            self.utils.PROP_BLACKLISTED_APPS)
+        current_app_list = utils.get_prop(
+            utils.PROP_BLACKLISTED_APPS)
         apps_entry.set_text(current_app_list)
         dialog.add_response("cancel", _("_Cancel"))
         dialog.add_response("ok", _("_Ok"))
@@ -174,7 +173,7 @@ class WaydroidsettingsWindow(Adw.ApplicationWindow):
         if response == 'ok':
             if len(app_list := apps_entry.get_text()) > 0:
                 str_apps_list = '"' + str(apps_entry.get_text().rstrip()) + '"'
-                self.utils.set_prop(self.utils.PROP_BLACKLISTED_APPS,
+                utils.set_prop(utils.PROP_BLACKLISTED_APPS,
                                     str_apps_list)
 
     @Gtk.Template.Callback()
@@ -183,7 +182,7 @@ class WaydroidsettingsWindow(Adw.ApplicationWindow):
             self, 'Included apps', 'Space separated package names to exclude')
         apps_entry = Gtk.Entry()
         dialog.set_extra_child(apps_entry)
-        current_app_list = self.utils.get_prop(self.utils.PROP_ACTIVE_APPS)
+        current_app_list = utils.get_prop(utils.PROP_ACTIVE_APPS)
         apps_entry.set_text(current_app_list)
         dialog.add_response("cancel", _("_Cancel"))
         dialog.add_response("ok", _("_Ok"))
@@ -194,7 +193,7 @@ class WaydroidsettingsWindow(Adw.ApplicationWindow):
         if response == 'ok':
             if len(app_list := apps_entry.get_text()) > 0:
                 str_apps_list = '"' + str(apps_entry.get_text().rstrip()) + '"'
-                self.utils.set_prop(self.utils.PROP_ACTIVE_APPS, str_apps_list)
+                utils.set_prop(utils.PROP_ACTIVE_APPS, str_apps_list)
 
     def show_not_available_dialog(self):
         dialog = Adw.MessageDialog.new(
@@ -217,7 +216,7 @@ class WaydroidsettingsWindow(Adw.ApplicationWindow):
 
         dialog = Adw.MessageDialog.new(
             self, 'Resize system image',
-            'Current image size: ' + str(self.utils.get_image_size()))
+            'Current image size: ' + str(utils.get_image_size()))
         size_entry = Gtk.Entry()
         dialog.set_extra_child(size_entry)
         size_entry.set_text('')
@@ -228,7 +227,7 @@ class WaydroidsettingsWindow(Adw.ApplicationWindow):
 
     def on_show_resize_dialog_response(self, dialog, response):
         if response == 'ok':
-            self.utils.resize_image(image_size_entry.get_text())
+            utils.resize_image(image_size_entry.get_text())
 
     @Gtk.Template.Callback()
     def show_wipe_dialog(self, button):
@@ -242,7 +241,7 @@ class WaydroidsettingsWindow(Adw.ApplicationWindow):
 
     def on_wipe_dialog_response(self, dialog, response):
         if response == 'ok':
-            self.utils.wipe_data()
+            utils.wipe_data()
 
     @Gtk.Template.Callback()
     def select_apk(self, button):
@@ -256,7 +255,7 @@ class WaydroidsettingsWindow(Adw.ApplicationWindow):
 
     def on_select_apk_response(self, dialog, response):
         if response == Gtk.ResponseType.ACCEPT:
-            self.utils.install_apk(dialog.get_file().get_path())
+            utils.install_apk(dialog.get_file().get_path())
 
         dialog.destroy()
 
@@ -275,39 +274,39 @@ class WaydroidsettingsWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_click_start_container(self, button):
-        self.utils.start_container_service()
+        utils.start_container_service()
         counter = 5
         while not (counter == 0):
             time.sleep(1)
             counter = counter - 1
-            if self.utils.is_container_active():
+            if utils.is_container_active():
                 counter = 0
                 self.update_status()
 
     @Gtk.Template.Callback()
     def on_click_start_session(self, button):
-        self.utils.start_session()
+        utils.start_session()
         counter = 5
         while not (counter == 0):
             time.sleep(1)
             counter = counter - 1
-            if self.utils.is_waydroid_running():
+            if utils.is_waydroid_running():
                 counter = 0
                 self.update_status()
 
     @Gtk.Template.Callback()
     def on_click_restart_session(self, button):
-        self.utils.restart_session()
+        utils.restart_session()
         self.update_status()
 
     @Gtk.Template.Callback()
     def on_click_stop_session(self, button):
-        self.utils.stop_session()
+        utils.stop_session()
         self.update_status()
 
     @Gtk.Template.Callback()
     def on_click_freeze_container(self, button):
-        self.utils.freeze_container()
+        utils.freeze_container()
         self.update_status()
 
     @Gtk.Template.Callback()
