@@ -110,7 +110,7 @@ class WaydroidSettings(Gtk.Application):
             hbox.set_margin_top(2.5)
             hbox.set_margin_bottom(2.5)
 
-            button = Gtk.Button.new_with_label("Retart Container and Session")
+            button = Gtk.Button.new_with_label("Restart Container and Session")
             button.id = "restart_waydroid_container_and_session_button"
             button.connect("clicked", self.on_click_restart_session)
             hbox.pack_start(button, True, True, 10)
