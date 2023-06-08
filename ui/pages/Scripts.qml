@@ -24,34 +24,8 @@ Page {
 
             ListView {
                 id: listView
-                model: ListModel {
-                    ListElement {
-                        name: "Bill Smith"
-                        number: "555 3264"
-                    }
-                    ListElement {
-                        name: "John Brown"
-                        number: "555 8426"
-                    }
-                    ListElement {
-                        name: "Sam Wise"
-                        number: "555 0473"
-                    }
-                    ListElement {
-                        name: "Bill Smith"
-                        number: "555 3264"
-                    }
-                    ListElement {
-                        name: "John Brown"
-                        number: "555 8426"
-                    }
-                    ListElement {
-                        name: "Sam Wise"
-                        number: "555 0473"
-                    }
-                }
+                model: backend.scripts_model
                 width: parent.width
-                //height: 200
 
                 delegate: RowLayout {
                     anchors.left: parent.left
@@ -62,7 +36,7 @@ Page {
                     }
 
                     Label {
-                        text: model.name
+                        text: name
                         Layout.fillWidth: true
                     }
 
