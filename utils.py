@@ -22,24 +22,24 @@ SYSTEM_IMAGE1 = '/var/lib/waydroid/images/system.img'
 SYSTEM_IMAGE2 = '/usr/share/waydroid-extra/images/system.img'
 
 # Check whether the specified path exists
-# Depending on install type, this might change 
+# Depending on install type, this might change
 if os.path.exists(SYSTEM_IMAGE1):
     SYSTEM_IMAGE = SYSTEM_IMAGE1
 elif os.path.exists(SYSTEM_IMAGE2):
     SYSTEM_IMAGE = SYSTEM_IMAGE2
 
-# Scripts Paths 
+# Scripts Paths
 scripts_dir1 = str(Path.home()) + '/.local/share/waydroid-settings/scripts/'
 scripts_dir2 = '/usr/share/waydroid-settings/scripts/'
 
 # Check whether the specified path exists
-# Depending on install type, this might change 
+# Depending on install type, this might change
 if os.path.isdir(scripts_dir1):
     SCRIPTS_DIR = scripts_dir1
 elif os.path.isdir(scripts_dir2):
     SCRIPTS_DIR = scripts_dir2
 
- 
+
 def run(command, as_root=False):
     try:
         if as_root:
@@ -60,7 +60,8 @@ def get_prop(name):
 
 def is_kb_disabled():
     try:
-        kb_val = subprocess.check_output(['pkexec', 'waydroid-helper', 'kb_status'])
+        kb_val = subprocess.check_output(
+            ['pkexec', 'waydroid-helper', 'kb_status'])
         print("kb_val: " + str(kb_val))
         return '1' in str(kb_val)
     except subprocess.CalledProcessError:
@@ -74,12 +75,14 @@ def set_prop(name, value):
 def run_shell_command(command, as_root=False):
     try:
         if as_root:
-            subprocess.run('pkexec /usr/bin/waydroid-helper ' + '" | echo "' + command + '" | sudo -S waydroid shell"', text=True)
+            subprocess.run('pkexec /usr/bin/waydroid-helper ' + '" | echo "' +
+                           command + '" | sudo -S waydroid shell"', text=True)
         else:
             subprocess.run(command, shell=True)
         return True
     except (subprocess.CalledProcessError, FileNotFoundError):
         return False
+
 
 def echo_command_to_wd_base(command):
     try:
@@ -94,7 +97,8 @@ def echo_command_to_wd_base(command):
 
 def is_waydroid_running():
     try:
-        waydroid_status = subprocess.check_output(['waydroid', 'status']).strip().decode("utf-8")
+        waydroid_status = subprocess.check_output(
+            ['waydroid', 'status']).strip().decode("utf-8")
         return 'RUNNING' in waydroid_status
     except (subprocess.CalledProcessError, FileNotFoundError):
         return False
@@ -191,6 +195,7 @@ def disable_navbar():
     except:
         return False
 
+
 def disable_freeform_override():
     try:
         print('disabling multi-window override')
@@ -227,7 +232,8 @@ def disable_kb():
         return True
     except:
         return False
-    
+
+
 def install_apk(apk):
     try:
         run('waydroid app install ' + apk)
