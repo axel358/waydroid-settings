@@ -28,6 +28,33 @@ class MainWindow(QObject):
 
     scripts_model = Property(QObject, fget=get_scripts_model, constant=True)
 
+    def load_values(self):
+
+        self._refreshing = True
+
+        self.free_form_switch.set_active(
+            utils.search_base_prop('persist.waydroid.multi_windows=true'))
+        self.color_invert_switch.set_active(
+            utils.get_prop(utils.PROP_INVERT_COLORS) == 'true')
+        self.suspend_switch.set_active(utils.get_prop(
+            utils.PROP_SUSPEND_INACTIVE) == 'true')
+        self.nav_btns_switch.set_active(
+            utils.search_base_prop('qemu.hw.mainkeys=1'))
+        self.soft_kb_switch.set_active(utils.is_kb_disabled())
+
+        if not utils.is_container_active():
+            # Start Container Service
+            pass
+
+        if not utils.is_waydroid_running():
+            # Start Session
+            pass
+        else:
+            # Show Session options
+            pass
+
+        self._refreshing = False
+
     def update_scripts_list(self):
 
         self._scripts_model.clear()

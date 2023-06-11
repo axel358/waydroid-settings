@@ -36,7 +36,6 @@ ScrollablePage {
                 FormSwitchDelegate {
                     id: loadImages
                     text: "Suspend the container on inactivity"
-                    description: "Whether to suspend the container on inactivity"
                     checked: false
                     onClicked: {}
                 }
