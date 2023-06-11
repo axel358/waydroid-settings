@@ -33,7 +33,7 @@ ScrollablePage {
 
                 FormButtonDelegate {
                     text: "Wipe all data(factory reset)"
-                    onClicked: {}
+                    onClicked: wipeDialog.open()
                 }
 
                 FormDelegateSeparator {}
@@ -142,5 +142,14 @@ ScrollablePage {
                 placeholderText: qsTr("New size")
             }
         }
+    }
+
+    PromptDialog {
+        id: wipeDialog
+        showCloseButton: false
+        title: "Factory reset"
+        subtitle: "This will delete all user installed apps and settings. This cannot be undone"
+        standardButtons: Dialog.Ok | Dialog.Cancel
+        onAccepted: showPassiveNotification("Deleting all your kitty pics...")
     }
 }
