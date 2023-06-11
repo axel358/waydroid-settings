@@ -1,5 +1,5 @@
 import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick.Controls 2.15 as Controls
 import QtQuick.Layouts 1.2
 import org.kde.kirigami 2.20
 import org.kde.kirigamiaddons.labs.mobileform 0.1
@@ -26,7 +26,7 @@ ScrollablePage {
 
                 FormButtonDelegate {
                     text: "Increase system image size"
-                    onClicked: {}
+                    onClicked: resizeDialog.open()
                 }
 
                 FormDelegateSeparator {}
@@ -40,13 +40,6 @@ ScrollablePage {
 
                 FormButtonDelegate {
                     text: "Install local apk"
-                    onClicked: {}
-                }
-
-                FormDelegateSeparator {}
-
-                FormButtonDelegate {
-                    text: "Flash zip file to system image"
                     onClicked: {}
                 }
 
@@ -112,6 +105,41 @@ ScrollablePage {
                     text: "Stop"
                     onClicked: {}
                 }
+            }
+        }
+    }
+
+    PromptDialog {
+        id: resizeDialog
+        title: "Resize image"
+        showCloseButton: false
+        standardButtons: Dialog.NoButton
+        customFooterActions: [
+            Action {
+                text: qsTr("Resize")
+                iconName: "dialog-ok"
+                onTriggered: {
+                    resizeDialog.close();
+                }
+            },
+            Action {
+                text: qsTr("Cancel")
+                iconName: "dialog-cancel"
+                onTriggered: {
+                    resizeDialog.close();
+                }
+            }
+        ]
+
+        ColumnLayout {
+            spacing: Units.largeSpacing
+
+            Controls.Label {
+                text: "Current size 2Gb"
+            }
+            Controls.TextField {
+                Layout.fillWidth: true
+                placeholderText: qsTr("New size")
             }
         }
     }
