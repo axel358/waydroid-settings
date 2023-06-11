@@ -43,11 +43,14 @@ Page {
                     ToolButton{
                         icon.name: "documentinfo"
                         onClicked: {
+                            terminal.run(path + " -h")
                         }
                     }
 
                     ToolButton{
                         onClicked: {
+                            //backend.run_script(path)
+                            terminal.run(path)
                         }
                         flat: true
                         icon.name: "media-playback-start-symbolic"
@@ -57,10 +60,11 @@ Page {
             }
         }
 
-        Card{
+        Card {
             Layout.fillWidth: true
             height: 150
             implicitHeight: height
+
             QMLTermWidget {
                 id: terminal
                 anchors.fill: parent
@@ -68,11 +72,23 @@ Page {
                 font.family: "Monospace"
                 font.pointSize: 11
                 //colorScheme: "default"
+
                 session: QMLTermSession{
-                    id: mainsession
+                    id: termSession
                     initialWorkingDirectory: "$HOME"
                 }
-                Component.onCompleted: mainsession.startShellProgram();
+
+
+                function run(command) {
+                    session.sendText(command)
+                    pressKey(Qt.Key_Enter, Qt.NoModifier, true)
+                }
+
+                function pressKey(key, modifiers, pressed, nativeScanCode, text) {
+                    simulateKeyPress(key, modifiers, pressed, nativeScanCode, text);
+                    forceActiveFocus();
+                }
+                Component.onCompleted: termSession.startShellProgram();
 
                 QMLTermScrollbar {
                     terminal: terminal

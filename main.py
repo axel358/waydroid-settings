@@ -15,7 +15,6 @@ class MainWindow(QObject):
     SCRIPT_NAME_ROLE = Qt.UserRole
     SCRIPT_PATH_ROLE = Qt.UserRole + 1
 
-
     def __init__(self):
         QObject.__init__(self)
         self._scripts_model = QStandardItemModel()
@@ -23,7 +22,6 @@ class MainWindow(QObject):
             {self.SCRIPT_NAME_ROLE: b"name", self.SCRIPT_PATH_ROLE: b"path"})
 
         self.update_scripts_list()
-
 
     def get_scripts_model(self):
         return self._scripts_model
@@ -34,7 +32,9 @@ class MainWindow(QObject):
 
         self._scripts_model.clear()
 
-        script_list = glob.glob(utils.SCRIPTS_DIR+'/**/*.sh', recursive=True) + glob.glob(utils.SCRIPTS_DIR+'/**/*.py', recursive=True)
+        script_list = glob.glob(utils.SCRIPTS_DIR+'/**/*.sh',
+                                recursive=True) + \
+            glob.glob(utils.SCRIPTS_DIR+'/**/*.py', recursive=True)
 
         for script in script_list:
             item = QStandardItem()

@@ -11,7 +11,6 @@ ScrollablePage {
     Theme.inherit: false
     Theme.colorSet: Theme.View
 
-    // settings list
     ColumnLayout {
         spacing: Units.largeSpacing * 2
 
