@@ -1,4 +1,5 @@
 import QtQuick.Layouts 1.2
+import QtQuick.Controls 2.15 as Controls
 import org.kde.kirigami 2.20
 import org.kde.kirigamiaddons.labs.mobileform 0.1
 import "../components"
@@ -53,15 +54,15 @@ ScrollablePage {
                 FormButtonDelegate {
                     text: "Apps to exclude from free form"
                     checked: false
-                    onClicked: {}
+                    onClicked: freeFormDialog.open()
                 }
 
                 FormDelegateSeparator {}
 
                 FormButtonDelegate {
-                    text: "Apps to exclude from free form"
+                    text: "Apps to force on the Wayland stack"
                     checked: false
-                    onClicked: {}
+                    onClicked: waylandDialog.open()
                 }
             }
         }
@@ -87,5 +88,45 @@ ScrollablePage {
                 }
             }
         }
+    }
+
+    PromptDialog {
+        id: freeFormDialog
+        title: "Apps to exclude"
+        showCloseButton: false
+
+        ColumnLayout {
+            spacing: Units.largeSpacing
+
+            Controls.Label {
+                text: "Space separated list of package names to exclude"
+            }
+            Controls.TextField {
+                Layout.fillWidth: true
+            }
+        }
+
+        standardButtons: Dialog.Ok | Dialog.Cancel
+        onAccepted: {}
+    }
+
+    PromptDialog {
+        id: waylandDialog
+        title: "Apps to include"
+        showCloseButton: false
+
+        ColumnLayout {
+            spacing: Units.largeSpacing
+
+            Controls.Label {
+                text: "Space separated list of package names to include"
+            }
+            Controls.TextField {
+                Layout.fillWidth: true
+            }
+        }
+
+        standardButtons: Dialog.Ok | Dialog.Cancel
+        onAccepted: {}
     }
 }

@@ -113,23 +113,6 @@ ScrollablePage {
         id: resizeDialog
         title: "Resize image"
         showCloseButton: false
-        standardButtons: Dialog.NoButton
-        customFooterActions: [
-            Action {
-                text: qsTr("Resize")
-                iconName: "dialog-ok"
-                onTriggered: {
-                    resizeDialog.close();
-                }
-            },
-            Action {
-                text: qsTr("Cancel")
-                iconName: "dialog-cancel"
-                onTriggered: {
-                    resizeDialog.close();
-                }
-            }
-        ]
 
         ColumnLayout {
             spacing: Units.largeSpacing
@@ -142,6 +125,9 @@ ScrollablePage {
                 placeholderText: qsTr("New size")
             }
         }
+
+        standardButtons: Dialog.Ok | Dialog.Cancel
+        onAccepted: showPassiveNotification("Resizing image...")
     }
 
     PromptDialog {
