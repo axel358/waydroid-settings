@@ -24,7 +24,7 @@ Page {
 
             ListView {
                 id: listView
-                model: backend.scripts_model
+                model: backend.scriptsModel
                 width: parent.width
 
                 delegate: RowLayout {

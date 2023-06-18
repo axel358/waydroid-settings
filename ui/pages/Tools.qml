@@ -3,6 +3,7 @@ import QtQuick.Controls 2.15 as Controls
 import QtQuick.Layouts 1.2
 import org.kde.kirigami 2.20
 import org.kde.kirigamiaddons.labs.mobileform 0.1
+import Qt.labs.platform 1.1
 
 ScrollablePage {
     id: root
@@ -40,25 +41,23 @@ ScrollablePage {
 
                 FormButtonDelegate {
                     text: "Install local apk"
-                    onClicked: {}
+                    onClicked: installApkDialog.open()
                 }
 
                 FormDelegateSeparator {}
 
                 FormSwitchDelegate {
-                    id: enableJavascript
+                    id: softKbSwitch
                     text: "Disable soft keyboard"
-                    checked: true
-                    onClicked: {}
+                    onCheckedChanged : backend.onSoftKbSwitchChanged(checked)
                 }
 
                 FormDelegateSeparator {}
 
                 FormSwitchDelegate {
-                    id: loadImages
+                    id: navButtonsSwitch
                     text: "Disable Android navigation buttons"
-                    checked: false
-                    onClicked: {}
+                    onCheckedChanged : backend.onNavButtonsSwitchChanged(checked)
                 }
             }
         }
@@ -73,15 +72,14 @@ ScrollablePage {
                 }
                 FormButtonDelegate {
                     text: "Restart"
-                    onClicked: {}
+                    onClicked: backend.onRestartContainerClicked()
                 }
 
                 FormDelegateSeparator {}
 
                 FormSwitchDelegate {
                     text: "Freeze"
-                    checked: true
-                    onClicked: {}
+                    onCheckedChanged : backend.onFreezeSwitchChanged(checked)
                 }
             }
         }
@@ -96,14 +94,14 @@ ScrollablePage {
                 }
                 FormButtonDelegate {
                     text: "Restart"
-                    onClicked: {}
+                    onClicked: backend.onRestartSessionClicked()
                 }
 
                 FormDelegateSeparator {}
 
                 FormButtonDelegate {
                     text: "Stop"
-                    onClicked: {}
+                    onClicked: backend.onStopSessionClicked()
                 }
             }
         }
@@ -137,5 +135,26 @@ ScrollablePage {
         subtitle: "This will delete all user installed apps and settings. This cannot be undone"
         standardButtons: Dialog.Ok | Dialog.Cancel
         onAccepted: showPassiveNotification("Deleting all your kitty pics...")
+    }
+
+    FileDialog {
+        id: installApkDialog
+        title: "Select apk"
+        fileMode: FileDialog.OpenFile
+        onAccepted: {
+            backend.installApk(file)
+        }
+    }
+
+    Connections {
+        target: backend
+
+        function onNavButtonsChanged (checked) {
+            navButtonsSwitch.checked = checked
+        }
+
+        function onSoftKbChanged (checked) {
+            softKbSwitch.checked = checked
+        }
     }
 }

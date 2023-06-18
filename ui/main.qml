@@ -2,6 +2,7 @@ import QtQuick 2.11
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.2
 import org.kde.kirigami 2.11 as Kirigami
+import "./components"
 
 Kirigami.ApplicationWindow {
     id: root
@@ -18,22 +19,23 @@ Kirigami.ApplicationWindow {
     pageStack.globalToolBar.showNavigationButtons: Kirigami.ApplicationHeaderStyle.ShowBackButton;
     pageStack.popHiddenPages: true
     pageStack.columnView.columnResizeMode: Kirigami.ColumnView.SingleColumn
-    
+
     property bool isWidescreen: root.width >= 500
     onIsWidescreenChanged: changeNav(isWidescreen);
 
     contextDrawer: Kirigami.ContextDrawer {}
-    
+
     Kirigami.PagePool {
         id: pagePool
     }
-    
+
     Component.onCompleted: {
         // initial page and nav type
-        switchToPage(getPage("Settings"), 1);
-        changeNav(isWidescreen);
+        switchToPage(getPage("Settings"), 1)
+        changeNav(isWidescreen)
+        backend.loadValues()
     }
-    
+
     function switchToPage(page, depth) {
         // pop pages above depth
         while (pageStack.depth > depth) pageStack.pop();
@@ -41,7 +43,7 @@ Kirigami.ApplicationWindow {
         
         pageStack.push(page);
     }
-    
+
     function getPage(name) {
         switch (name) {
             case "Settings": return pagePool.loadPage("pages/Settings.qml");
@@ -51,7 +53,7 @@ Kirigami.ApplicationWindow {
             case "About": return pagePool.loadPage("pages/About.qml");
         }
     }
-    
+
     // switch between bottom toolbar and sidebar
     function changeNav(toWidescreen) {
         if (toWidescreen) {
@@ -69,10 +71,20 @@ Kirigami.ApplicationWindow {
             footer = bottomToolbar.createObject(root);
         }
     }
-    
+
     Loader {
         id: sidebarLoader
         source: "components/Sidebar.qml"
         active: false
+    }
+
+
+
+    Connections {
+        target: backend
+
+        function onShowToast(message){
+            showPassiveNotification(message)
+        }
     }
 }

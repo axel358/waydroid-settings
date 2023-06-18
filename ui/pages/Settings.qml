@@ -1,8 +1,8 @@
+import QtQuick 2.15
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 2.15 as Controls
 import org.kde.kirigami 2.20
 import org.kde.kirigamiaddons.labs.mobileform 0.1
-import "../components"
 
 ScrollablePage {
     id: root
@@ -24,28 +24,26 @@ ScrollablePage {
                     title: "General"
                 }
                 FormSwitchDelegate {
-                    id: enableJavascript
+                    id: freeFormSwitch
                     text: "Enable multi-window mode"
                     description: "Only works on Gnome/Mutter"
-                    checked: true
-                    onClicked: {}
+                    onCheckedChanged : backend.onFreeFormSwitchChanged(checked)
                 }
 
                 FormDelegateSeparator {}
 
                 FormSwitchDelegate {
-                    id: loadImages
+                    id: suspendSwitch
                     text: "Suspend the container on inactivity"
-                    checked: false
-                    onClicked: {}
+                    onCheckedChanged : backend.onSuspendSwitchChanged(checked)
                 }
 
                 FormDelegateSeparator {}
 
                 FormSwitchDelegate {
+                    id: colorInvertSwitch
                     text: "Invert colors"
-                    checked: false
-                    onClicked: {}
+                    onCheckedChanged : backend.onColorInvertSwitchChanged(checked)
                 }
 
                 FormDelegateSeparator {}
@@ -87,6 +85,7 @@ ScrollablePage {
                 }
             }
         }
+
     }
 
     PromptDialog {
@@ -127,5 +126,21 @@ ScrollablePage {
 
         standardButtons: Dialog.Ok | Dialog.Cancel
         onAccepted: {}
+    }
+
+    Connections {
+        target: backend
+
+        function onFreeFormChanged (checked) {
+            freeFormSwitch.checked = checked
+        }
+
+        function onColorInvertChanged (checked) {
+            colorInvertSwitch.checked = checked
+        }
+
+        function onSuspendChanged (checked) {
+            suspendSwitch.checked = checked
+        }
     }
 }

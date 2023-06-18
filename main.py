@@ -6,7 +6,7 @@ import utils
 import glob
 from PySide2.QtWidgets import QApplication
 from PySide2.QtQml import QQmlApplicationEngine
-from PySide2.QtCore import QObject, Qt, Property
+from PySide2.QtCore import QObject, Qt, Property, Signal, Slot
 from PySide2.QtGui import QStandardItem, QStandardItemModel
 
 
@@ -17,30 +17,38 @@ class MainWindow(QObject):
 
     def __init__(self):
         QObject.__init__(self)
-        self._scripts_model = QStandardItemModel()
-        self._scripts_model.setItemRoleNames(
+        self._scriptsModel = QStandardItemModel()
+        self._scriptsModel.setItemRoleNames(
             {self.SCRIPT_NAME_ROLE: b"name", self.SCRIPT_PATH_ROLE: b"path"})
 
-        self.update_scripts_list()
+        self.updateScriptsList()
 
-    def get_scripts_model(self):
-        return self._scripts_model
+    def getScriptsModel(self):
+        return self._scriptsModel
 
-    scripts_model = Property(QObject, fget=get_scripts_model, constant=True)
+    scriptsModel = Property(QObject, fget=getScriptsModel, constant=True)
 
-    def load_values(self):
+    freeFormChanged = Signal(bool)
+    colorInvertChanged = Signal(bool)
+    suspendChanged = Signal(bool)
+    navButtonsChanged = Signal(bool)
+    softKbChanged = Signal(bool)
+    showToast = Signal(str)
+
+    @Slot()
+    def loadValues(self):
 
         self._refreshing = True
 
-        self.free_form_switch.set_active(
+        self.freeFormChanged.emit(
             utils.search_base_prop('persist.waydroid.multi_windows=true'))
-        self.color_invert_switch.set_active(
+        self.colorInvertChanged.emit(
             utils.get_prop(utils.PROP_INVERT_COLORS) == 'true')
-        self.suspend_switch.set_active(utils.get_prop(
+        self.suspendChanged.emit(utils.get_prop(
             utils.PROP_SUSPEND_INACTIVE) == 'true')
-        self.nav_btns_switch.set_active(
+        self.navButtonsChanged.emit(
             utils.search_base_prop('qemu.hw.mainkeys=1'))
-        self.soft_kb_switch.set_active(utils.is_kb_disabled())
+        self.softKbChanged.emit(utils.is_kb_disabled())
 
         if not utils.is_container_active():
             # Start Container Service
@@ -55,9 +63,9 @@ class MainWindow(QObject):
 
         self._refreshing = False
 
-    def update_scripts_list(self):
+    def updateScriptsList(self):
 
-        self._scripts_model.clear()
+        self._scriptsModel.clear()
 
         script_list = glob.glob(utils.SCRIPTS_DIR+'/**/*.sh',
                                 recursive=True) + \
@@ -67,7 +75,47 @@ class MainWindow(QObject):
             item = QStandardItem()
             item.setData(os.path.basename(script), self.SCRIPT_NAME_ROLE)
             item.setData(script, self.SCRIPT_PATH_ROLE)
-            self._scripts_model.appendRow(item)
+            self._scriptsModel.appendRow(item)
+
+    @Slot(bool)
+    def onFreeFormSwitchChanged(self, checked):
+        pass
+
+    @Slot(bool)
+    def onColorInvertSwitchChanged(self, checked):
+        pass
+
+    @Slot(bool)
+    def onSuspendSwitchChanged(self, checked):
+        pass
+
+    @Slot(bool)
+    def onSoftKbSwitchChanged(self, checked):
+        pass
+
+    @Slot(bool)
+    def onNavButtonsSwitchChanged(self, checked):
+        pass
+
+    @Slot(bool)
+    def onFreezeSwitchChanged(self, checked):
+        pass
+
+    @Slot()
+    def onRestartContainerClicked(self):
+        pass
+
+    @Slot()
+    def onRestartSessionClicked(self):
+        pass
+
+    @Slot()
+    def onStopSessionClicked(self):
+        pass
+
+    @Slot(str)
+    def installApk(self, file):
+        pass
 
 
 if __name__ == '__main__':
