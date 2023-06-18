@@ -16,6 +16,9 @@ class WaydroidSettings(Gtk.Application):
     def __init__(self, *args, **kargs):
         super().__init__(*args, application_id='cu.axel.waydroidsettings', **kargs)
 
+        icon_theme = Gtk.IconTheme.get_default()
+        icon_theme.append_search_path('icons')
+
         self.builder = Gtk.Builder.new_from_file('window.ui')
         self.window = None
         self.refreshing = False
@@ -30,7 +33,7 @@ class WaydroidSettings(Gtk.Application):
         self.suspend_switch = self.builder.get_object('suspend_switch')
         self.nav_btns_switch = self.builder.get_object('nav_btns_switch')
         self.soft_kb_switch = self.builder.get_object('soft_kb_switch')
-        
+
         self.free_form_switch.connect('state-set', self.toggle_free_form)
         self.nav_btns_switch.connect('state-set', self.toggle_navbar)
         self.soft_kb_switch.connect('state-set', self.toggle_keyboard)
@@ -209,14 +212,14 @@ class WaydroidSettings(Gtk.Application):
                 utils.disable_navbar()
             else:
                 utils.enable_navbar()
-    
+
     def toggle_keyboard(self, switch, checked):
         if not self.refreshing:
             if checked:
                 utils.disable_kb()
             else:
                 utils.enable_kb()
-    
+
     def toggle_color_inversion(self, switch, checked):
         if not self.refreshing:
             utils.set_prop(utils.PROP_INVERT_COLORS, str(checked).lower())
@@ -266,8 +269,8 @@ class WaydroidSettings(Gtk.Application):
                 utils.set_prop(utils.PROP_ACTIVE_APPS, str_apps_list)
 
         dialog.destroy()
-    
-    
+
+
     def show_password_dialog(self):
         dialog = Gtk.Dialog(title='Root Permission Required', use_header_bar=True)
         dialog.add_buttons(
@@ -279,9 +282,9 @@ class WaydroidSettings(Gtk.Application):
         pass_entry.set_visibility(False)
         pass_entry.set_margin_start(5)
         pass_entry.set_margin_end(5)
-        
+
         pass_entry.connect('activate', self.check_pass, pass_entry, dialog)
-                
+
         dialog.get_content_area().pack_start(pass_entry, True, True, 10)
         dialog.show_all()
         response = dialog.run()
@@ -291,7 +294,7 @@ class WaydroidSettings(Gtk.Application):
         else:
             dialog.destroy()
 
-                    
+
     def check_pass(self, widget, pass_entry, dialog):
         if len(password := pass_entry.get_text().strip()) > 0:
             if utils.is_correct_pass(password):
@@ -310,7 +313,7 @@ class WaydroidSettings(Gtk.Application):
         dialog.run()
         dialog.destroy()
         # ~ self.show_password_dialog()
-    
+
     def show_not_available_dialog(self):
         dialog = Gtk.MessageDialog(transient_for=self.window)
         dialog.props.message_type=Gtk.MessageType.INFO
@@ -346,7 +349,7 @@ class WaydroidSettings(Gtk.Application):
             utils.resize_image(image_size_entry.get_text())
 
         dialog.destroy()
-        
+
     def show_wipe_dialog(self, button):
         dialog = Gtk.MessageDialog(transient_for=self.window)
         dialog.props.message_type=Gtk.MessageType.INFO
@@ -357,7 +360,7 @@ class WaydroidSettings(Gtk.Application):
         if response == Gtk.ResponseType.OK:
             utils.wipe_data()
         dialog.destroy()
-        
+
     def select_apk(self, button):
         dialog = Gtk.FileChooserDialog(title = 'Select apk', parent = self.window, action = Gtk.FileChooserAction.OPEN)
         dialog.add_buttons("_Cancel", Gtk.ResponseType.CANCEL, "_Save", Gtk.ResponseType.ACCEPT)
@@ -376,13 +379,13 @@ class WaydroidSettings(Gtk.Application):
             script_row = Gtk.Box(
                 orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
             script_icon_image = Gtk.Image().new_from_icon_name(
-                'text-x-script', Gtk.IconSize.BUTTON)
+                'scripts-python-symbolic' if '.py' in script else 'scripts-symbolic', Gtk.IconSize.BUTTON)
             script_name_label = Gtk.Label(label=os.path.basename(script))
             run_help_button = Gtk.Button().new_from_icon_name(
-                'help-about', Gtk.IconSize.BUTTON)
+                'info-symbolic', Gtk.IconSize.BUTTON)
             run_help_button.connect('clicked', self.run_help, script)
             run_script_button = Gtk.Button().new_from_icon_name(
-                'media-playback-start', Gtk.IconSize.BUTTON)
+                'run-symbolic', Gtk.IconSize.BUTTON)
             run_script_button.connect('clicked', self.run_script, script)
 
             script_row.pack_start(script_icon_image, False, False, 0)
@@ -398,8 +401,7 @@ class WaydroidSettings(Gtk.Application):
         self.scripts_list_box.show_all()
 
     def run_script(self, button, script):
-        if '.py' in script: interpreter = '/bin/python3'
-        else: interpreter = '/bin/bash'
+        interpreter = '/bin/python3' if '.py' in script else '/bin/bash'
         self.terminal.spawn_async(Vte.PtyFlags.DEFAULT, None, [interpreter, script], None, GLib.SpawnFlags.DEFAULT, None,None,-1, None, None)
 
     def run_help(self, button, script):
@@ -409,9 +411,9 @@ class WaydroidSettings(Gtk.Application):
         self.terminal.spawn_async(Vte.PtyFlags.DEFAULT, None, [interpreter, script, help_arg], None, GLib.SpawnFlags.DEFAULT, None,None,-1, None, None)
 
     def on_tab_switched(self, notebook, page, position):
-        if position == 1:
+        if position == 3:
             self.docs_web_view.load_uri(utils.DOCS_URL)
-        elif position == 2:
+        elif position == 1:
             self.update_scripts_list()
 
     def show_about_dialog(self, button):
