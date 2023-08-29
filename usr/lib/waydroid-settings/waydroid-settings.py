@@ -87,8 +87,6 @@ class WaydroidSettings(Gtk.Application):
             container_banner.set_revealed(True)
         elif not utils.is_waydroid_running():
             session_banner.set_revealed(True)
-        else:
-            pass
 
         self.refreshing = False
 
