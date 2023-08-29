@@ -1,5 +1,5 @@
 [Desktop Entry]
-Icon=/usr/lib/waydroid/data/wd-settings-icon.png
+Icon=cu.axel.WaydroidSettings
 Type=Application
 Name=Install to Waydroid
 Exec=sudo waydroid app install %F

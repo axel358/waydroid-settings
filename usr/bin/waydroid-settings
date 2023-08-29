@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+/usr/lib/waydroid-settings/waydroid-settings.py "$@"

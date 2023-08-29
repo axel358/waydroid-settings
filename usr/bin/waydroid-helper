@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
 BASE_PROP_LOC="/var/lib/waydroid/waydroid_base.prop"
 
