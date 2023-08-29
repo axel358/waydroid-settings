@@ -557,7 +557,7 @@
                                   <object class="GtkLabel">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="label" translatable="yes">Disable Android navigation buttons</property>
+                                    <property name="label" translatable="yes">Disable navigation buttons</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>

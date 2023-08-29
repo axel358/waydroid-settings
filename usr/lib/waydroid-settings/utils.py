@@ -1,6 +1,7 @@
 import subprocess
 import os
 from pathlib import Path
+from gi.repository import GLib
 
 PROP_FREE_FORM = 'persist.waydroid.multi_windows'
 PROP_INVERT_COLORS = ''
@@ -22,24 +23,17 @@ SYSTEM_IMAGE1 = '/var/lib/waydroid/images/system.img'
 SYSTEM_IMAGE2 = '/usr/share/waydroid-extra/images/system.img'
 
 # Check whether the specified path exists
-# Depending on install type, this might change 
+# Depending on install type, this might change
 if os.path.exists(SYSTEM_IMAGE1):
     SYSTEM_IMAGE = SYSTEM_IMAGE1
 elif os.path.exists(SYSTEM_IMAGE2):
     SYSTEM_IMAGE = SYSTEM_IMAGE2
 
-# Scripts Paths 
-scripts_dir1 = str(Path.home()) + '/.local/share/waydroid-settings/scripts/'
-scripts_dir2 = '/usr/share/waydroid-settings/scripts/'
+# Scripts Paths
+SCRIPTS_DIR = os.path.join(GLib.get_user_data_dir(), 'waydroid-settings', 'scripts')
+if not os.path.exists(SCRIPTS_DIR):
+            os.makedirs(SCRIPTS_DIR)
 
-# Check whether the specified path exists
-# Depending on install type, this might change 
-if os.path.isdir(scripts_dir1):
-    SCRIPTS_DIR = scripts_dir1
-elif os.path.isdir(scripts_dir2):
-    SCRIPTS_DIR = scripts_dir2
-
- 
 def run(command, as_root=False):
     try:
         if as_root:
@@ -227,7 +221,7 @@ def disable_kb():
         return True
     except:
         return False
-    
+
 def install_apk(apk):
     try:
         run('waydroid app install ' + apk)
