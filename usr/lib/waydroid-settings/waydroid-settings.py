@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 import sys
 import gi
 import utils
@@ -46,17 +47,9 @@ class WaydroidSettings(Gtk.Application):
         self.terminal = Vte.Terminal()
         self.terminal.set_input_enabled(True)
         self.terminal.set_scroll_on_output(True)
-        bg_color = Gdk.RGBA()
-        bg_color.red = 1.0
-        bg_color.blue = 1.0
-        bg_color.green = 1.0
-        bg_color.alpha = 1.0
+        bg_color = scroll_view.get_style_context().lookup_color('theme_base_color')[1]
         self.terminal.set_color_background(bg_color)
-        fg_color = Gdk.RGBA()
-        fg_color.red = 0.0
-        fg_color.blue = 0.0
-        fg_color.green = 0.0
-        fg_color.alpha = 1.0
+        fg_color = scroll_view.get_style_context().lookup_color('theme_text_color')[1]
         self.terminal.set_color_foreground(fg_color)
         scroll_view.add(self.terminal)
         terminal_box = self.builder.get_object('terminal_box')
