@@ -234,6 +234,7 @@
                                   <object class="GtkSwitch" id="free_form_switch">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -285,6 +286,7 @@
                                   <object class="GtkSwitch" id="suspend_switch">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
                                     <signal name="state-set" handler="toggle_suspend" swapped="no"/>
                                   </object>
                                   <packing>
@@ -337,6 +339,7 @@
                                   <object class="GtkSwitch" id="color_invert_switch">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
                                     <signal name="state-set" handler="toggle_color_inversion" swapped="no"/>
                                   </object>
                                   <packing>
@@ -391,6 +394,7 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
                                     <property name="receives-default">True</property>
+                                    <property name="valign">center</property>
                                     <signal name="clicked" handler="show_ff_dialog" swapped="no"/>
                                   </object>
                                   <packing>
@@ -445,6 +449,7 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
                                     <property name="receives-default">True</property>
+                                    <property name="valign">center</property>
                                     <signal name="clicked" handler="show_force_w_dialog" swapped="no"/>
                                   </object>
                                   <packing>
@@ -519,6 +524,7 @@
                                   <object class="GtkSwitch" id="soft_kb_switch">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -569,6 +575,7 @@
                                   <object class="GtkSwitch" id="nav_btns_switch">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
+                                    <property name="valign">center</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -794,6 +801,7 @@
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
                             <property name="receives-default">True</property>
+                            <property name="valign">center</property>
                             <signal name="clicked" handler="show_resize_dialog" swapped="no"/>
                           </object>
                           <packing>
@@ -847,6 +855,7 @@
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
                             <property name="receives-default">True</property>
+                            <property name="valign">center</property>
                             <signal name="clicked" handler="show_wipe_dialog" swapped="no"/>
                             <style>
                               <class name="destructive-action"/>
@@ -903,6 +912,7 @@
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
                             <property name="receives-default">True</property>
+                            <property name="valign">center</property>
                             <signal name="clicked" handler="select_apk" swapped="no"/>
                           </object>
                           <packing>
@@ -977,6 +987,7 @@
                           <object class="GtkSwitch" id="restart_container_button">
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
+                            <property name="valign">center</property>
                             <signal name="state-set" handler="on_toggle_freeze_container" swapped="no"/>
                           </object>
                           <packing>
@@ -1030,6 +1041,7 @@
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
                             <property name="receives-default">True</property>
+                            <property name="valign">center</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1080,6 +1092,7 @@
                           <object class="GtkBox">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
+                            <property name="valign">center</property>
                             <child>
                               <object class="GtkButton" id="select_apk_button1">
                                 <property name="label" translatable="yes">Restart</property>
