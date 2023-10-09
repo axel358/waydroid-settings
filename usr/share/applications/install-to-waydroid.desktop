@@ -2,7 +2,7 @@
 Icon=cu.axel.WaydroidSettings
 Type=Application
 Name=Install to Waydroid
-Exec=sudo waydroid app install %F
+Exec=waydroid app install %F
 MimeType=application/vnd.android.package-archive
 Terminal=true
 NoDisplay=true
