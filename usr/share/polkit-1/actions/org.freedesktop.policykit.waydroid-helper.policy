@@ -13,6 +13,7 @@
         <allow_active>auth_admin_keep</allow_active>
     </defaults>
     <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/waydroid-helper</annotate>
+    <annotate key="org.freedesktop.policykit.exec.path">$HOME/.local/bin/waydroid-helper</annotate>
     <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
     </action>
 </policyconfig>
