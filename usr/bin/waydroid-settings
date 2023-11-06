@@ -1,2 +1,12 @@
 #!/usr/bin/env bash
-/usr/lib/waydroid-settings/waydroid-settings.py "$@"
+
+# Check if the system is immutable and set directory variables.
+if sudo touch /bin/testfile 2>/dev/null; then
+    # System is not immutable
+    libdir="/usr/lib"
+else
+    # System is immutable
+    libdir="$HOME/.local/lib"
+fi
+
+$libdir/waydroid-settings/waydroid-settings.py "$@"

@@ -3,6 +3,28 @@ import os
 from pathlib import Path
 from gi.repository import GLib
 
+# Function to check if a directory is writable
+def is_writable(directory):
+    try:
+        with open(os.path.join(directory, 'testfile'), 'w'):
+            pass
+        os.remove(os.path.join(directory, 'testfile'))
+        return True
+    except IOError:
+        return False
+
+# Check if the system is immutable
+if is_writable('/bin'):
+    # System is not immutable
+    bindir = "/usr/bin"
+    libdir = "/usr/lib"
+    sharedir = "/usr/share"
+else:
+    # System is immutable
+    bindir = os.path.expanduser("~/.local/bin")
+    libdir = os.path.expanduser("~/.local/lib")
+    sharedir = os.path.expanduser("~/.local/share")
+    
 PROP_FREE_FORM = 'persist.waydroid.multi_windows'
 PROP_INVERT_COLORS = ''
 PROP_SUSPEND_INACTIVE = 'persist.waydroid.suspend'
@@ -20,7 +42,7 @@ ROOT_PW = ''
 
 # System.img paths
 SYSTEM_IMAGE1 = '/var/lib/waydroid/images/system.img'
-SYSTEM_IMAGE2 = '/usr/share/waydroid-extra/images/system.img'
+SYSTEM_IMAGE2 = '{sharedir}/waydroid-extra/images/system.img'
 
 # Check whether the specified path exists
 # Depending on install type, this might change
@@ -37,7 +59,7 @@ if not os.path.exists(SCRIPTS_DIR):
 def run(command, as_root=False):
     try:
         if as_root:
-            subprocess.run(['pkexec', '/usr/bin/waydroid-helper', command])
+            subprocess.run(['pkexec', '{bindir}/waydroid-helper', command])
         else:
             subprocess.run(command, shell=True)
         return True
@@ -68,7 +90,7 @@ def set_prop(name, value):
 def run_shell_command(command, as_root=False):
     try:
         if as_root:
-            subprocess.run('pkexec /usr/bin/waydroid-helper ' + '" | echo "' + command + '" | sudo -S waydroid shell"', text=True)
+            subprocess.run('pkexec {bindir}/waydroid-helper ' + '" | echo "' + command + '" | sudo -S waydroid shell"', text=True)
         else:
             subprocess.run(command, shell=True)
         return True

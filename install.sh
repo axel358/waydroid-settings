@@ -1,12 +1,30 @@
 #!/usr/bin/env bash
 
+# Check if the system is immutable and set directory variables.
+if touch sudo /bin/testfile 2>/dev/null; then
+    # System is not immutable
+    sudo rm -f /bin/testfile
+    maindir="/usr"
+    bindir="/usr/bin"
+    libdir="/usr/lib"
+    sharedir="/usr/share"
+    applicationsdir="/usr/share/applications"
+else
+    # System is immutable
+    maindir="$HOME/.local/"
+    bindir="$HOME/.local/bin"
+    libdir="$HOME/.local/lib"
+    sharedir="$HOME/.local/share"
+    applicationsdir="$HOME/.local/share/applications"
+fi
+
 # Check if script is from cloned repo or just coppied from github
 if [ -n "$(git config --get remote.origin.url)" ]; then
-    echo ""
+    echo
     echo "Cloned repo"
     CLONED=true
 else
-    echo ""
+    echo
     echo "Copied from github"
     TEMPDIR=`mktemp -d`
     CLONED=false
@@ -19,16 +37,16 @@ if [ "$CLONED" = false ]; then
     cd $TEMPDIR
 fi
 
-echo ""
+echo
 echo "Installing..."
-sudo cp -r usr/* /usr/
-sudo chmod +x /usr/bin/waydroid-settings
-sudo chmod +x /usr/bin/waydroid-helper
-sudo update-desktop-database /usr/share/applications
-sudo update-icon-caches /usr/share/icons/hicolor
+sudo cp -r usr/* $maindir #what does this do
+sudo chmod +x $bindir/waydroid-settings
+sudo chmod +x $bindir/waydroid-helper
+sudo update-desktop-database $applicationsdir
+sudo update-icon-caches $maindir/icons/hicolor
 
 # if scripts/* exist, then copy those to ~/.local/share/waydroid-settings
-echo ""
+echo
 echo "Copying scripts to ~/.local/share/waydroid-settings"
 
 if [ -n "$(find scripts -maxdepth 1 -type f)" ]; then
@@ -45,7 +63,7 @@ fi
 
 # if CLONEED == false, then cleanup ~/.local/share/waydroid-settings
 if [ "$CLONED" = false ]; then
-    echo ""
+    echo
     echo "Cleaning up"
     rm -rf $TEMPDIR
 fi
