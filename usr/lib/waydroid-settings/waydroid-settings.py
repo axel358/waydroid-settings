@@ -8,7 +8,7 @@ import os
 import subprocess
 import time
 gi.require_version('Gtk', '3.0')
-gi.require_version('WebKit2', '4.0')
+gi.require_version('WebKit2', '4.1')
 gi.require_version('Vte', '2.91')
 from gi.repository import Gtk, Vte, WebKit2, GLib, Gdk
 
