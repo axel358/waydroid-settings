@@ -1,7 +1,7 @@
 using Gtk 4.0;
 using Adw 1;
 
-template WaydroidsettingsWindow : Adw.ApplicationWindow {
+template $WaydroidsettingsWindow: Adw.ApplicationWindow {
   modal: true;
   width-request: 360;
   height-request: 500;
@@ -12,28 +12,28 @@ template WaydroidsettingsWindow : Adw.ApplicationWindow {
 
     Adw.HeaderBar {
       centering-policy: strict;
-      title-widget:
-      Adw.ViewSwitcherTitle switcher_title {
+
+      title-widget: Adw.ViewSwitcherTitle switcher_title {
         stack: stack;
-        title: bind WaydroidsettingsWindow.title;
+        title: bind template.title;
       };
 
       Button {
         icon-name: "info-symbolic";
-        clicked => show_about();
+        clicked => $show_about();
       }
     }
 
     Adw.ViewStack stack {
       vexpand: true;
 
-      Adw.ViewStackPage  {
+      Adw.ViewStackPage {
         name: "settings_page";
         title: _("_Settings");
         icon-name: "settings-symbolic";
         use-underline: true;
-        child:
-        Box settings_page{
+
+        child: Box settings_page {
           orientation: vertical;
 
           InfoBar container_bar {
@@ -47,7 +47,7 @@ template WaydroidsettingsWindow : Adw.ApplicationWindow {
             [action]
             Button {
               label: "Start";
-              clicked => on_click_start_container();
+              clicked => $on_click_start_container();
             }
           }
 
@@ -62,7 +62,7 @@ template WaydroidsettingsWindow : Adw.ApplicationWindow {
             [action]
             Button {
               label: "Start";
-              clicked => on_click_start_session();
+              clicked => $on_click_start_session();
             }
           }
 
@@ -71,7 +71,6 @@ template WaydroidsettingsWindow : Adw.ApplicationWindow {
             vexpand: true;
 
             Viewport {
-
               Adw.Clamp {
                 margin-top: 12;
                 margin-end: 12;
@@ -79,9 +78,8 @@ template WaydroidsettingsWindow : Adw.ApplicationWindow {
                 margin-bottom: 12;
                 maximum-size: 550;
                 tightening-threshold: 580;
-                child:
 
-                Box {
+                child: Box {
                   orientation: vertical;
                   spacing: 12;
 
@@ -119,7 +117,7 @@ template WaydroidsettingsWindow : Adw.ApplicationWindow {
                       Button {
                         label: _("Change");
                         valign: center;
-                        clicked => show_ff_dialog();
+                        clicked => $show_ff_dialog();
                       }
                     }
 
@@ -129,10 +127,11 @@ template WaydroidsettingsWindow : Adw.ApplicationWindow {
                       Button {
                         label: _("Change");
                         valign: center;
-                        clicked => show_force_w_dialog();
+                        clicked => $show_force_w_dialog();
                       }
                     }
                   }
+
                   Adw.PreferencesGroup {
                     title: "Window";
 
@@ -180,9 +179,8 @@ template WaydroidsettingsWindow : Adw.ApplicationWindow {
         title: _("_Scripts");
         icon-name: "scripts-symbolic";
         use-underline: true;
-        child:
 
-        Box {
+        child: Box {
           orientation: vertical;
 
           ScrolledWindow {
@@ -190,24 +188,30 @@ template WaydroidsettingsWindow : Adw.ApplicationWindow {
             vexpand: true;
 
             Viewport {
-
               ListBox scripts_list {
                 margin-top: 12;
                 margin-start: 12;
                 margin-end: 12;
                 margin-bottom: 12;
                 valign: start;
-                styles ["boxed-list"]
+
+                styles [
+                  "boxed-list",
+                ]
               }
             }
           }
+
           ScrolledWindow {
             margin-start: 12;
             margin-end: 12;
             margin-bottom: 12;
             margin-top: 12;
             height-request: 150;
-            styles ["frame"]
+
+            styles [
+              "frame",
+            ]
 
             Viewport terminal_box {
               margin-start: 6;
@@ -224,12 +228,11 @@ template WaydroidsettingsWindow : Adw.ApplicationWindow {
         title: _("_Tools");
         icon-name: "tools-symbolic";
         use-underline: true;
-        child:
-        ScrolledWindow {
+
+        child: ScrolledWindow {
           hscrollbar-policy: never;
 
           Viewport {
-
             Adw.Clamp {
               margin-top: 12;
               margin-end: 12;
@@ -237,9 +240,8 @@ template WaydroidsettingsWindow : Adw.ApplicationWindow {
               margin-bottom: 12;
               maximum-size: 550;
               tightening-threshold: 580;
-              child:
 
-              Box {
+              child: Box {
                 orientation: vertical;
                 spacing: 12;
 
@@ -252,7 +254,7 @@ template WaydroidsettingsWindow : Adw.ApplicationWindow {
                     Button {
                       label: _("Change");
                       valign: center;
-                      clicked => show_resize_dialog();
+                      clicked => $show_resize_dialog();
                     }
                   }
 
@@ -262,8 +264,11 @@ template WaydroidsettingsWindow : Adw.ApplicationWindow {
                     Button {
                       label: _("Wipe");
                       valign: center;
-                      clicked => show_wipe_dialog();
-                      styles ["destructive-action"]
+                      clicked => $show_wipe_dialog();
+
+                      styles [
+                        "destructive-action",
+                      ]
                     }
                   }
 
@@ -273,7 +278,7 @@ template WaydroidsettingsWindow : Adw.ApplicationWindow {
                     Button {
                       label: _("Select");
                       valign: center;
-                      clicked => select_apk();
+                      clicked => $select_apk();
                     }
                   }
 
@@ -289,7 +294,7 @@ template WaydroidsettingsWindow : Adw.ApplicationWindow {
                   Adw.ActionRow {
                     title: _("Disable soft keyboard");
 
-                    Switch soft_kb_switch{
+                    Switch soft_kb_switch {
                       valign: center;
                     }
                   }
@@ -302,29 +307,30 @@ template WaydroidsettingsWindow : Adw.ApplicationWindow {
                     }
                   }
                 }
+
                 Adw.PreferencesGroup {
                   title: "Waydroid";
+
                   Adw.ActionRow {
                     title: _("Container");
 
                     Button {
                       label: _("Restart");
                       valign: center;
-                      clicked => on_click_restart_session();
+                      clicked => $on_click_restart_session();
                     }
 
                     Button {
                       label: _("Freeze");
                       valign: center;
-                      clicked => on_click_freeze_container();
+                      clicked => $on_click_freeze_container();
                     }
 
                     Button {
                       label: _("Unfreeze");
                       valign: center;
-                      clicked => on_click_unfreeze_container();
+                      clicked => $on_click_unfreeze_container();
                     }
-
                   }
 
                   Adw.ActionRow {
@@ -333,15 +339,14 @@ template WaydroidsettingsWindow : Adw.ApplicationWindow {
                     Button {
                       label: _("Restart");
                       valign: center;
-                      clicked => on_click_restart_session();
+                      clicked => $on_click_restart_session();
                     }
 
                     Button {
                       label: _("Stop");
                       valign: center;
-                      clicked => on_click_stop_session();
+                      clicked => $on_click_stop_session();
                     }
-
                   }
                 }
               };
@@ -355,18 +360,18 @@ template WaydroidsettingsWindow : Adw.ApplicationWindow {
         title: _("Docs");
         icon-name: "docs-symbolic";
         use-underline: true;
-        child:
-        ScrolledWindow {
+
+        child: ScrolledWindow {
           margin-start: 12;
           margin-end: 12;
           margin-bottom: 12;
           margin-top: 12;
 
-          Viewport web_box {
-          }
+          Viewport web_box {}
         };
       }
     }
+
     Adw.ViewSwitcherBar switcher_bar {
       stack: stack;
       reveal: bind switcher_title.title-visible;
